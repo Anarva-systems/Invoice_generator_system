@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+/* Bulletproof Print Rules for Document Printing */
+@media print {
+  /* 1. Hide web application UI elements */
+  .no-print,
+  header,
+  nav,
+  aside,
+  button,
+  input,
+  textarea {
+    display: none !important;
+  }
+
+  /* 2. Reset html & body for pure white A4 print canvas */
+  html,
+  body {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 3. Override display:none or hidden on layout wrappers when printing */
+  .hidden,
+  .lg\:hidden,
+  .hidden.lg\:flex {
+    display: block !important;
+  }
+
+  /* 4. Reset layout containers */
+  .min-h-screen,
+  .flex-1,
+  .overflow-hidden,
+  .overflow-auto {
+    display: block !important;
+    position: static !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: auto !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+
+  /* 5. Target the document template directly */
+  #invoice-print-area {
+    display: block !important;
+    visibility: visible !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    padding: 12mm 16mm 10mm 16mm !important;
+    box-sizing: border-box !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    z-index: 99999 !important;
+  }
+
+  #invoice-print-area * {
+    visibility: visible !important;
+  }
+
+  /* Preserve blue text color for CGST/SGST tags in print dialog */
+  #invoice-print-area span[style*="color: #0000ff"],
+  #invoice-print-area span[style*="color: rgb(0, 0, 255)"] {
+    color: #0000ff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* Scrollbars for dark dashboard UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
