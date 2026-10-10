@@ -240,15 +240,19 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
             {/* Security Badge Header */}
             <div className="flex flex-col items-center text-center mb-8">
               <div className="relative mb-5">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-600/30">
-                  {isSubmitting ? (
-                    <Unlock className="w-8 h-8 text-white transition-transform duration-300" />
-                  ) : (
-                    <Lock className="w-8 h-8 text-white" />
-                  )}
+                <div className="w-20 h-20 rounded-2xl bg-white shadow-xl shadow-indigo-950/50 border border-slate-700/60 p-1 flex items-center justify-center">
+                  <img
+                    src="/satya_sai_logo.png"
+                    alt="Satya Sai Constructions"
+                    className="w-full h-full object-contain rounded-xl"
+                  />
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-slate-900 border-2 border-slate-800 flex items-center justify-center">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-slate-900 border-2 border-slate-800 flex items-center justify-center shadow-md">
+                  {isSubmitting ? (
+                    <Unlock className="w-3.5 h-3.5 text-emerald-400" />
+                  ) : (
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  )}
                 </div>
               </div>
 

@@ -27,15 +27,44 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data }) => {
   const InvoiceCopy = () => (
     <div
       style={{
+        position: 'relative',
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: "'Times New Roman', Times, serif",
         color: '#000000',
-        backgroundColor: '#ffffff',
+        backgroundColor: 'transparent',
         lineHeight: 1.2,
       }}
     >
+      {/* Subtle Company Logo Watermark */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '260px',
+          height: '260px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          zIndex: 0,
+          opacity: 0.065,
+        }}
+      >
+        <img
+          src="/satya_sai_logo.png"
+          alt="Watermark"
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain',
+          }}
+        />
+      </div>
       {/* Header Title */}
       <div style={{ textAlign: 'center', marginBottom: '3px' }}>
         <h1

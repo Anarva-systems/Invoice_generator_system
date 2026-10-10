@@ -35,15 +35,17 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       {/* Left: Brand & Template Switcher */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-md shadow-indigo-500/20">
-            <span className="font-serif font-extrabold text-white text-lg">I</span>
-          </div>
+          <img
+            src="/satya_sai_logo.png"
+            alt="Satya Sai Constructions Logo"
+            className="w-10 h-10 rounded-full object-contain bg-white shadow-md shadow-indigo-500/20 border border-slate-700/80 p-0.5 hover:scale-105 transition-transform"
+          />
           <div>
             <h1 className="font-bold text-base text-white tracking-tight flex items-center gap-2">
-              Invoice Generator System
+              Satya Sai Constructions
             </h1>
             <p className="text-xs text-slate-400">
-              Master Document Replica Generator
+              Invoice Generator System
             </p>
           </div>
         </div>
