@@ -154,9 +154,13 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
     } catch (err: any) {
       console.error('[Dispatch Error]:', err);
       let friendlyError = err?.message || 'Failed to dispatch verification request.';
-      if (err?.code === 'auth/operation-not-allowed' || err?.message?.includes('BILLING_NOT_ENABLED')) {
+      if (
+        err?.code === 'auth/operation-not-allowed' ||
+        err?.code === 'auth/billing-not-enabled' ||
+        err?.message?.toLowerCase().includes('billing')
+      ) {
         friendlyError =
-          'Firebase Free Tier requires adding +916301451462 under Authentication > Sign-in method > Phone > "Phone numbers for testing" (Free & Instant), or use Email Verification.';
+          'Google Firebase Free Tier blocks live SMS without billing. To use Mobile OTP for free, add +916301451462 in Firebase Console under Phone > "Phone numbers for testing", or switch to Email OTP.';
       } else if (err?.code === 'auth/too-many-requests') {
         friendlyError = 'Too many requests. Please wait a few moments before trying again, or use Email Verification.';
       } else if (err?.code === 'auth/quota-exceeded') {
@@ -195,9 +199,13 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
     } catch (err: any) {
       console.error('[Resend Error]:', err);
       let msg = err?.message || 'Failed to resend verification request.';
-      if (err?.code === 'auth/operation-not-allowed' || err?.message?.includes('BILLING_NOT_ENABLED')) {
+      if (
+        err?.code === 'auth/operation-not-allowed' ||
+        err?.code === 'auth/billing-not-enabled' ||
+        err?.message?.toLowerCase().includes('billing')
+      ) {
         msg =
-          'Firebase Free Tier requires adding +916301451462 under Authentication > Sign-in method > Phone > "Phone numbers for testing" (Free & Instant), or use Email Verification.';
+          'Google Firebase Free Tier blocks live SMS without billing. To use Mobile OTP for free, add +916301451462 in Firebase Console under Phone > "Phone numbers for testing", or switch to Email OTP.';
       }
       setError(msg);
     } finally {

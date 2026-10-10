@@ -56,10 +56,17 @@ export async function sendEmailJsOtp(toEmail: string): Promise<{ success: boolea
   };
 
   const templateParams = {
+    email: toEmail.trim(),
     to_email: toEmail.trim(),
+    user_email: toEmail.trim(),
+    recipient_email: toEmail.trim(),
+    to_name: 'Administrator',
+    reply_to: toEmail.trim(),
     otp_code: otp,
+    otp: otp,
     passcode: otp,
     code: otp,
+    message: `Your Valuation Invoice Generator security passcode reset OTP is: ${otp}. This code is valid for ${validityMinutes} minutes.`,
     validity_minutes: validityMinutes.toString(),
     app_name: 'Valuation Invoice Generator',
     time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }),
