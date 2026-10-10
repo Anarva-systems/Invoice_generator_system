@@ -90,10 +90,6 @@ export const App: React.FC = () => {
     showNotification('Invoice preview updated successfully!');
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   const handleDownloadPDF = () => {
     const currentInvoiceNo =
       activeTemplate === 'valuation'
@@ -139,7 +135,6 @@ export const App: React.FC = () => {
           localStorage.setItem('invoice_active_template', tmpl);
           showNotification(`Switched to ${tmpl === 'valuation' ? 'Bank Valuation' : 'Construction GST'} Invoice Template`);
         }}
-        onPrint={handlePrint}
         onDownloadPDF={handleDownloadPDF}
         onReset={handleReset}
         onGenerate={handleGenerate}

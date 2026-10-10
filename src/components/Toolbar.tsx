@@ -1,11 +1,11 @@
 import React from 'react';
 import type { ActiveTemplate } from '../types/invoice';
-import { Printer, Download, RotateCcw, CheckCircle2, ZoomIn, ZoomOut, Maximize2, Layers, Lock } from 'lucide-react';
+import { Download, RotateCcw, CheckCircle2, ZoomIn, ZoomOut, Maximize2, Layers, Lock } from 'lucide-react';
 
 interface ToolbarProps {
   activeTemplate: ActiveTemplate;
   onTemplateChange: (template: ActiveTemplate) => void;
-  onPrint: () => void;
+  onPrint?: () => void;
   onDownloadPDF: () => void;
   onReset: () => void;
   onGenerate: () => void;
@@ -20,7 +20,6 @@ interface ToolbarProps {
 export const Toolbar: React.FC<ToolbarProps> = ({
   activeTemplate,
   onTemplateChange,
-  onPrint,
   onDownloadPDF,
   onReset,
   onGenerate,
@@ -120,14 +119,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         >
           <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
           Generate Preview
-        </button>
-
-        <button
-          onClick={onPrint}
-          className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-100 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-all shadow-sm"
-        >
-          <Printer className="w-3.5 h-3.5 text-indigo-400" />
-          Print Invoice
         </button>
 
         <button

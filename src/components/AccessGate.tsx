@@ -9,25 +9,16 @@ import {
   KeyRound,
   CheckCircle2,
   Mail,
-  Smartphone,
   ArrowLeft,
   RefreshCw,
   Send,
   Loader2,
 } from 'lucide-react';
 import {
-  createRecaptchaVerifier,
-  sendFirebaseMobileOtp,
-  verifyFirebaseMobileOtp,
-} from '../services/firebaseAuth';
-import {
   sendEmailJsOtp,
   verifyEmailJsOtp,
   isEmailJsConfigured,
 } from '../services/emailJsService';
-import type { ConfirmationResult, RecaptchaVerifier } from 'firebase/auth';
-
-export type OtpChannel = 'mobile' | 'email';
 
 interface AccessGateProps {
   onAuthenticate: (remember: boolean) => void;
@@ -36,7 +27,6 @@ interface AccessGateProps {
 type GateView = 'login' | 'forgot_method' | 'verify_otp' | 'reset_pin' | 'reset_success';
 
 const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_RECOVERY_EMAIL || 'ashapulokesh32@gmail.com').trim();
-const ADMIN_MOBILE = (import.meta.env.VITE_ADMIN_RECOVERY_MOBILE || '+91 6301451462').trim();
 
 export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
   // Login State
@@ -47,11 +37,8 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
   const [isShaking, setIsShaking] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Forgot Password / Firebase Flow State
+  // Forgot Password / Email OTP Flow State
   const [view, setView] = useState<GateView>('login');
-  const [recoveryChannel, setRecoveryChannel] = useState<OtpChannel>('mobile');
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
-  const [recaptchaVerifier, setRecaptchaVerifier] = useState<RecaptchaVerifier | null>(null);
   const [enteredOtp, setEnteredOtp] = useState('');
   const [resendCooldown, setResendCooldown] = useState(60);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
@@ -127,48 +114,24 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
     }, 500);
   };
 
-  // Dispatch verification request via EmailJS (Email) or Firebase (Mobile)
+  // Dispatch 6-digit OTP verification request via EmailJS directly to authorized Gmail
   const handleSendOtp = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setError(null);
     setIsSendingOtp(true);
 
     try {
-      if (recoveryChannel === 'mobile') {
-        let verifier = recaptchaVerifier;
-        if (!verifier) {
-          verifier = createRecaptchaVerifier('firebase-recaptcha-anchor');
-          setRecaptchaVerifier(verifier);
-        }
-        const confResult = await sendFirebaseMobileOtp(ADMIN_MOBILE, verifier);
-        setConfirmationResult(confResult);
-        setDispatchStatus('Real Google SMS code has been dispatched to your authorized mobile phone.');
-      } else {
-        await sendEmailJsOtp(ADMIN_EMAIL);
-        setDispatchStatus('A secure 6-digit OTP has been sent directly to your authorized Gmail inbox.');
-      }
-
+      await sendEmailJsOtp(ADMIN_EMAIL);
+      setDispatchStatus('A secure 6-digit OTP has been sent directly to your authorized Gmail inbox.');
       setResendCooldown(60);
       setEnteredOtp('');
       setView('verify_otp');
     } catch (err: any) {
-      console.error('[Dispatch Error]:', err);
-      let friendlyError = err?.message || 'Failed to dispatch verification request.';
-      if (
-        err?.code === 'auth/operation-not-allowed' ||
-        err?.code === 'auth/billing-not-enabled' ||
-        err?.message?.toLowerCase().includes('billing')
-      ) {
-        friendlyError =
-          'Google Firebase Free Tier blocks live SMS without billing. To use Mobile OTP for free, add +916301451462 in Firebase Console under Phone > "Phone numbers for testing", or switch to Email OTP.';
-      } else if (err?.code === 'auth/too-many-requests') {
-        friendlyError = 'Too many requests. Please wait a few moments before trying again, or use Email Verification.';
-      } else if (err?.code === 'auth/quota-exceeded') {
-        friendlyError = 'SMS quota reached. Please use email verification or try again later.';
-      } else if (err?.code === 'auth/invalid-phone-number') {
-        friendlyError = 'Invalid mobile number format configured.';
-      }
-      setError(friendlyError);
+      console.error('[Email OTP Dispatch Error]:', err);
+      setError(
+        err?.message ||
+          'Failed to dispatch verification email. Please check your network and EmailJS configuration.'
+      );
     } finally {
       setIsSendingOtp(false);
     }
@@ -180,34 +143,13 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
     setIsSendingOtp(true);
 
     try {
-      if (recoveryChannel === 'mobile') {
-        let verifier = recaptchaVerifier;
-        if (!verifier) {
-          verifier = createRecaptchaVerifier('firebase-recaptcha-anchor');
-          setRecaptchaVerifier(verifier);
-        }
-        const confResult = await sendFirebaseMobileOtp(ADMIN_MOBILE, verifier);
-        setConfirmationResult(confResult);
-        setDispatchStatus('A new Google SMS code has been dispatched to your authorized phone.');
-      } else {
-        await sendEmailJsOtp(ADMIN_EMAIL);
-        setDispatchStatus('A new 6-digit OTP code has been dispatched to your Gmail inbox.');
-      }
-
+      await sendEmailJsOtp(ADMIN_EMAIL);
+      setDispatchStatus('A new 6-digit OTP code has been dispatched to your Gmail inbox.');
       setResendCooldown(60);
       setEnteredOtp('');
     } catch (err: any) {
       console.error('[Resend Error]:', err);
-      let msg = err?.message || 'Failed to resend verification request.';
-      if (
-        err?.code === 'auth/operation-not-allowed' ||
-        err?.code === 'auth/billing-not-enabled' ||
-        err?.message?.toLowerCase().includes('billing')
-      ) {
-        msg =
-          'Google Firebase Free Tier blocks live SMS without billing. To use Mobile OTP for free, add +916301451462 in Firebase Console under Phone > "Phone numbers for testing", or switch to Email OTP.';
-      }
-      setError(msg);
+      setError(err?.message || 'Failed to resend verification email.');
     } finally {
       setIsSendingOtp(false);
     }
@@ -217,62 +159,26 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
     e.preventDefault();
     setError(null);
 
-    if (recoveryChannel === 'mobile') {
-      if (!enteredOtp.trim()) {
-        setError('Please enter the 6-digit SMS code received on your phone');
-        return;
-      }
+    if (!enteredOtp.trim()) {
+      setError('Please enter the 6-digit OTP code received in your email');
+      return;
+    }
 
-      if (!confirmationResult) {
-        setError('SMS session expired. Please click resend to get a new code.');
-        return;
+    setIsVerifyingOtp(true);
+    try {
+      const res = verifyEmailJsOtp(enteredOtp.trim());
+      if (res.valid) {
+        setNewPasscode('');
+        setConfirmNewPasscode('');
+        setView('reset_pin');
+      } else {
+        setError(res.reason || 'Invalid OTP code. Please check your email and try again.');
       }
-
-      setIsVerifyingOtp(true);
-      try {
-        const verified = await verifyFirebaseMobileOtp(confirmationResult, enteredOtp.trim());
-        if (verified) {
-          setNewPasscode('');
-          setConfirmNewPasscode('');
-          setView('reset_pin');
-        } else {
-          setError('Invalid verification code. Please check your SMS and try again.');
-        }
-      } catch (err: any) {
-        console.error('[Firebase SMS Verification Error]:', err);
-        let msg = 'Incorrect or expired SMS verification code.';
-        if (err?.code === 'auth/invalid-verification-code') {
-          msg = 'Incorrect SMS verification code. Please check the code sent to your phone.';
-        } else if (err?.code === 'auth/code-expired') {
-          msg = 'The verification code has expired. Please request a new code.';
-        }
-        setError(msg);
-      } finally {
-        setIsVerifyingOtp(false);
-      }
-    } else {
-      // Email OTP verification
-      if (!enteredOtp.trim()) {
-        setError('Please enter the 6-digit OTP code received in your email');
-        return;
-      }
-
-      setIsVerifyingOtp(true);
-      try {
-        const res = verifyEmailJsOtp(enteredOtp.trim());
-        if (res.valid) {
-          setNewPasscode('');
-          setConfirmNewPasscode('');
-          setView('reset_pin');
-        } else {
-          setError(res.reason || 'Invalid OTP code. Please check your email and try again.');
-        }
-      } catch (err: any) {
-        console.error('[Email OTP Verification Error]:', err);
-        setError(err?.message || 'Failed to verify email OTP.');
-      } finally {
-        setIsVerifyingOtp(false);
-      }
+    } catch (err: any) {
+      console.error('[Email OTP Verification Error]:', err);
+      setError(err?.message || 'Failed to verify email OTP.');
+    } finally {
+      setIsVerifyingOtp(false);
     }
   };
 
@@ -492,40 +398,8 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
                 Reset Security Passcode
               </h2>
               <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-                Select your verification channel to receive a real-time one-time password (OTP).
+                A 6-digit one-time passcode (OTP) will be dispatched directly to your authorized administrator Gmail address.
               </p>
-            </div>
-
-            {/* Channel Tabs (Automated Mobile / Automated Email) */}
-            <div className="grid grid-cols-2 gap-2 p-1 bg-slate-950 border border-slate-800 rounded-xl">
-              <button
-                type="button"
-                onClick={() => {
-                  setRecoveryChannel('mobile');
-                  setError(null);
-                }}
-                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all ${recoveryChannel === 'mobile'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-900/30'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-900'
-                  }`}
-              >
-                <Smartphone className="w-3.5 h-3.5" />
-                <span>Mobile Dispatch</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setRecoveryChannel('email');
-                  setError(null);
-                }}
-                className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-semibold transition-all ${recoveryChannel === 'email'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-900/30'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-900'
-                  }`}
-              >
-                <Mail className="w-3.5 h-3.5" />
-                <span>Email Dispatch</span>
-              </button>
             </div>
 
             {/* Zero-Disclosure Protected Destination Card */}
@@ -541,16 +415,14 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
 
               <div className="flex items-center gap-3 p-3 bg-slate-900 border border-slate-800/80 rounded-lg">
                 <div className="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
-                  {recoveryChannel === 'mobile' ? <Smartphone className="w-5 h-5" /> : <Mail className="w-5 h-5" />}
+                  <Mail className="w-5 h-5" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold text-white tracking-wide">
-                    {recoveryChannel === 'mobile' ? 'Registered Administrator Device' : 'Registered Administrator Mailbox'}
+                    Registered Administrator Mailbox
                   </div>
                   <div className="text-[11px] text-slate-400 mt-0.5">
-                    {recoveryChannel === 'mobile'
-                      ? 'Automated security code will be sent to the confidential mobile contact on file.'
-                      : 'Automated security code will be sent to the confidential email address on file.'}
+                    Automated security code will be sent to the confidential Gmail account on file.
                   </div>
                 </div>
               </div>
@@ -562,7 +434,7 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
             </div>
 
             <form onSubmit={handleSendOtp} className="space-y-4">
-              {recoveryChannel === 'email' && !isEmailJsConfigured() && (
+              {!isEmailJsConfigured() && (
                 <div className="p-3 bg-amber-950/40 border border-amber-800/60 rounded-xl text-xs space-y-1.5 text-amber-300">
                   <div className="font-semibold flex items-center gap-1.5 text-amber-200">
                     <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
@@ -594,7 +466,7 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    <span>Dispatch Security Code</span>
+                    <span>Dispatch Security Code to Email</span>
                   </>
                 )}
               </button>
@@ -603,7 +475,7 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
         )}
 
         {/* ======================================================== */}
-        {/* VIEW 3: VERIFY REAL-TIME OTP                             */}
+        {/* VIEW 3: VERIFY REAL-TIME EMAIL OTP                       */}
         {/* ======================================================== */}
         {view === 'verify_otp' && (
           <div className="space-y-6">
@@ -616,7 +488,7 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
                 }}
                 className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
               >
-                <ArrowLeft className="w-4 h-4" /> Change Channel
+                <ArrowLeft className="w-4 h-4" /> Back
               </button>
               <div className="text-[11px] text-indigo-400 font-semibold uppercase tracking-wider">
                 Step 2 of 3
@@ -628,12 +500,10 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
                 <ShieldCheck className="w-7 h-7" />
               </div>
               <h2 className="text-xl font-bold text-white tracking-tight">
-                {recoveryChannel === 'mobile' ? 'Enter Google SMS Code' : 'Enter 6-Digit Email OTP'}
+                Enter 6-Digit Email OTP
               </h2>
               <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto">
-                {recoveryChannel === 'mobile'
-                  ? 'A 6-digit SMS verification code has been dispatched to your authorized phone.'
-                  : 'A 6-digit one-time passcode has been sent directly to your authorized Gmail inbox.'}
+                A 6-digit one-time passcode has been sent directly to your authorized Gmail inbox.
               </p>
             </div>
 
@@ -642,18 +512,14 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               <div className="text-[11px] leading-relaxed">
                 {dispatchStatus ||
-                  (recoveryChannel === 'mobile'
-                    ? 'Please check your mobile text messages (SMS) for the 6-digit code.'
-                    : 'Please check your Gmail inbox (including Spam folder) for the 6-digit OTP code.')}
+                  'Please check your Gmail inbox (including Spam folder) for the 6-digit OTP code.'}
               </div>
             </div>
 
             <form onSubmit={handleVerifyOtp} className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-slate-300 mb-1.5 text-center">
-                  {recoveryChannel === 'mobile'
-                    ? 'Enter 6-Digit SMS Code Received'
-                    : 'Enter 6-Digit Code Received in Gmail'}
+                  Enter 6-Digit Code Received in Gmail
                 </label>
                 <input
                   ref={otpInputRef}
