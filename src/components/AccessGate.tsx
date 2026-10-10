@@ -150,11 +150,11 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
     } catch (err: any) {
       console.error('[Firebase Dispatch Error]:', err);
       let friendlyError = err?.message || 'Failed to dispatch verification request.';
-      if (err?.code === 'auth/operation-not-allowed') {
+      if (err?.code === 'auth/operation-not-allowed' || err?.message?.includes('BILLING_NOT_ENABLED')) {
         friendlyError =
-          'Google SMS Region Policy: Please enable India (+91) in Firebase Console (Authentication > Settings > SMS Region Policy), or add +916301451462 under Authentication > Sign-in method > Phone > Phone numbers for testing.';
+          'Firebase Free Tier requires adding +916301451462 under Authentication > Sign-in method > Phone > "Phone numbers for testing" (Free & Instant), or you can use Email Verification.';
       } else if (err?.code === 'auth/too-many-requests') {
-        friendlyError = 'Too many requests. Please wait a few moments before trying again.';
+        friendlyError = 'Too many requests. Please wait a few moments before trying again, or use Email Verification.';
       } else if (err?.code === 'auth/quota-exceeded') {
         friendlyError = 'SMS quota reached. Please use email verification or try again later.';
       } else if (err?.code === 'auth/invalid-phone-number') {
@@ -191,9 +191,9 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
     } catch (err: any) {
       console.error('[Firebase Resend Error]:', err);
       let msg = err?.message || 'Failed to resend verification request.';
-      if (err?.code === 'auth/operation-not-allowed') {
+      if (err?.code === 'auth/operation-not-allowed' || err?.message?.includes('BILLING_NOT_ENABLED')) {
         msg =
-          'Google SMS Region Policy: Please enable India (+91) in Firebase Console (Authentication > Settings > SMS Region Policy), or add +916301451462 under Phone > Phone numbers for testing.';
+          'Firebase Free Tier requires adding +916301451462 under Authentication > Sign-in method > Phone > "Phone numbers for testing" (Free & Instant), or you can use Email Verification.';
       }
       setError(msg);
     } finally {
