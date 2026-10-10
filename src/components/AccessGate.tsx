@@ -130,7 +130,7 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
       console.error('[Email OTP Dispatch Error]:', err);
       setError(
         err?.message ||
-          'Failed to dispatch verification email. Please check your network and EmailJS configuration.'
+        'Failed to dispatch verification email. Please check your network and EmailJS configuration.'
       );
     } finally {
       setIsSendingOtp(false);
@@ -258,7 +258,7 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
               </div>
 
               <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                Security Gate Access
+                Satya Sai Constructions Gate Access
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xs">
                 Enter your authorized passcode to unlock the Invoice Generator workspace.
@@ -305,8 +305,8 @@ export const AccessGate: React.FC<AccessGateProps> = ({ onAuthenticate }) => {
                     placeholder="Enter security passcode..."
                     autoComplete="current-password"
                     className={`w-full bg-slate-950/80 text-white placeholder-slate-600 text-sm rounded-xl pl-10 pr-11 py-3 border transition-all outline-none focus:ring-2 ${error
-                        ? 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/20'
-                        : 'border-slate-800 focus:border-indigo-500 focus:ring-indigo-500/20'
+                      ? 'border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/20'
+                      : 'border-slate-800 focus:border-indigo-500 focus:ring-indigo-500/20'
                       }`}
                   />
 
