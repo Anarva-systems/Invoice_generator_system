@@ -66,7 +66,7 @@
     width: 210mm !important;
     min-height: 297mm !important;
     margin: 0 !important;
-    padding: 12mm 16mm 10mm 16mm !important;
+    padding: 12mm 14mm 8mm 14mm !important;
     box-sizing: border-box !important;
     background-color: #ffffff !important;
     background: #ffffff !important;
@@ -75,6 +75,12 @@
     box-shadow: none !important;
     border: none !important;
     z-index: 99999 !important;
+  }
+
+  #invoice-print-area[data-portion="single"] {
+    min-height: 148.5mm !important;
+    height: 148.5mm !important;
+    padding: 8mm 14mm 6mm 14mm !important;
   }
 
   #invoice-print-area * {

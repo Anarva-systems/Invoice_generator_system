@@ -20,7 +20,13 @@ export const App: React.FC = () => {
       sessionStorage.getItem(AUTH_STORAGE_KEY) === 'true'
     );
   });
-  const [activeTemplate, setActiveTemplate] = useState<ActiveTemplate>('construction');
+  const [activeTemplate, setActiveTemplate] = useState<ActiveTemplate>(() => {
+    const saved = localStorage.getItem('invoice_active_template');
+    if (saved === 'valuation' || saved === 'construction') {
+      return saved;
+    }
+    return 'valuation';
+  });
   const [valuationData, setValuationData] = useState<InvoiceData>(DEFAULT_INVOICE_DATA);
   const [constructionData, setConstructionData] = useState<ConstructionInvoiceData>(
     DEFAULT_CONSTRUCTION_INVOICE_DATA
@@ -130,6 +136,7 @@ export const App: React.FC = () => {
         activeTemplate={activeTemplate}
         onTemplateChange={(tmpl) => {
           setActiveTemplate(tmpl);
+          localStorage.setItem('invoice_active_template', tmpl);
           showNotification(`Switched to ${tmpl === 'valuation' ? 'Bank Valuation' : 'Construction GST'} Invoice Template`);
         }}
         onPrint={handlePrint}

@@ -12,7 +12,10 @@ export const ConstructionInvoiceTemplate: React.FC<ConstructionInvoiceTemplatePr
     data.amountBeforeGst,
     data.cgstRate,
     data.sgstRate,
-    data.tdsRate
+    data.tdsRate,
+    data.gstMode,
+    data.manualCgstAmount,
+    data.manualSgstAmount
   );
 
   const totalInvoiceWords = numberToIndianWords(totals.totalInvoiceValue);
@@ -53,7 +56,7 @@ export const ConstructionInvoiceTemplate: React.FC<ConstructionInvoiceTemplatePr
             color: '#000000',
           }}
         >
-          INVOICE
+          {data.headerTitle || 'INVOICE CASH/CREDIT CARD'}
         </h1>
       </div>
 
@@ -178,31 +181,44 @@ export const ConstructionInvoiceTemplate: React.FC<ConstructionInvoiceTemplatePr
                       </td>
                     </tr>
 
-                    {/* 2. CGST */}
-                    <tr style={{ borderBottom: '1px solid #000000' }}>
-                      <td style={{ padding: '6px 8px', borderRight: '1px solid #000000' }}>
-                        (add)&nbsp;&nbsp;&nbsp;
-                        <span style={{ color: '#0000ff', textDecoration: 'underline' }}>
-                          CGST@{data.cgstRate}%
-                        </span>
-                      </td>
-                      <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'bold' }}>
-                        {formatRupeeAmount(totals.cgstAmount)}
-                      </td>
-                    </tr>
+                    {data.gstMode === 'none' ? (
+                      <tr style={{ borderBottom: '1px solid #000000' }}>
+                        <td style={{ padding: '6px 8px', borderRight: '1px solid #000000' }}>
+                          Without GST
+                        </td>
+                        <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'bold' }}>
+                          0.00
+                        </td>
+                      </tr>
+                    ) : (
+                      <>
+                        {/* 2. CGST */}
+                        <tr style={{ borderBottom: '1px solid #000000' }}>
+                          <td style={{ padding: '6px 8px', borderRight: '1px solid #000000' }}>
+                            (add)&nbsp;&nbsp;&nbsp;
+                            <span style={{ color: '#0000ff', textDecoration: 'underline' }}>
+                              CGST@{data.cgstRate}%
+                            </span>
+                          </td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'bold' }}>
+                            {formatRupeeAmount(totals.cgstAmount)}
+                          </td>
+                        </tr>
 
-                    {/* 3. SGST */}
-                    <tr style={{ borderBottom: '1px solid #000000' }}>
-                      <td style={{ padding: '6px 8px', borderRight: '1px solid #000000' }}>
-                        (add)&nbsp;&nbsp;&nbsp;
-                        <span style={{ color: '#0000ff', textDecoration: 'underline' }}>
-                          SGST@{data.sgstRate}%
-                        </span>
-                      </td>
-                      <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'bold' }}>
-                        {formatRupeeAmount(totals.sgstAmount)}
-                      </td>
-                    </tr>
+                        {/* 3. SGST */}
+                        <tr style={{ borderBottom: '1px solid #000000' }}>
+                          <td style={{ padding: '6px 8px', borderRight: '1px solid #000000' }}>
+                            (add)&nbsp;&nbsp;&nbsp;
+                            <span style={{ color: '#0000ff', textDecoration: 'underline' }}>
+                              SGST@{data.sgstRate}%
+                            </span>
+                          </td>
+                          <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'bold' }}>
+                            {formatRupeeAmount(totals.sgstAmount)}
+                          </td>
+                        </tr>
+                      </>
+                    )}
 
                     {/* 4. TOTAL INVOICE VALUE */}
                     <tr style={{ borderBottom: '1px solid #000000' }}>

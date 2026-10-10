@@ -17,11 +17,20 @@ export interface PropertyInfo {
   pinCode: string;
   propertyType: string;
   propertyValue: number | string;
+  additionalInfo?: string; // Optional extra property details
 }
+
+export type GstMode = 'split' | 'none' | 'other';
+export type InvoicePortion = 'single' | 'full';
 
 export interface ChargesInfo {
   serviceCharges: number | string;
-  gstRate: number; // Default 18
+  gstMode: GstMode; // 'split' (2 parts: CGST + SGST), 'none' (Without GST), 'other' (Other / Custom)
+  cgstRate: number; // Default 9%
+  sgstRate: number; // Default 9%
+  otherRate: number; // Default 18% or custom
+  otherCharges: number | string; // Optional extra other charges
+  otherDescription?: string; // Optional description for other charges
 }
 
 export interface ValuerInfo {
@@ -29,12 +38,16 @@ export interface ValuerInfo {
   accountNo: string;
   bankName: string;
   branchName: string;
+  ifsc?: string; // Optional IFSC Code
+  other?: string; // Optional custom footer/valuer info
 }
 
 export interface InvoiceData {
   invoiceNo: string;
   invoiceDate: string;
   valuationDate: string;
+  headerTitle: string; // 'INVOICE CASH/CREDIT CARD'
+  exportPortion: InvoicePortion; // 'single' | 'full'
   recipient: RecipientInfo;
   property: PropertyInfo;
   charges: ChargesInfo;
@@ -71,6 +84,7 @@ export interface ConstructionParticularItem {
 }
 
 export interface ConstructionInvoiceData {
+  headerTitle?: string;
   invoiceNo: string;
   dated: string;
   suppliersRef: string;
@@ -79,9 +93,12 @@ export interface ConstructionInvoiceData {
   buyer: ConstructionBuyerInfo;
   particular: ConstructionParticularItem;
   amountBeforeGst: number | string;
-  cgstRate: number; // default 9%
-  sgstRate: number; // default 9%
-  tdsRate: number; // default 2%
+  gstMode?: 'manual' | 'none' | 'auto'; // 'manual' for direct rupee entry, 'none' for without GST, 'auto' for standard %
+  cgstRate: number | string; // e.g. 9 or custom manual %
+  sgstRate: number | string; // e.g. 9 or custom manual %
+  manualCgstAmount?: number | string;
+  manualSgstAmount?: number | string;
+  tdsRate: number | string; // e.g. 2 or 0 or custom %
 }
 
 export type ActiveTemplate = 'valuation' | 'construction';

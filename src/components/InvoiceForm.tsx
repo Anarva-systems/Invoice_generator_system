@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { InvoiceData } from '../types/invoice';
-import { calculateGST, calculateTotal } from '../utils/formatters';
+import { calculateValuationInvoice } from '../utils/formatters';
 import {
   getTodayFormatted,
   getYesterdayFormatted,
@@ -26,6 +26,10 @@ import {
   Lock,
   Unlock,
   Sparkles,
+  Percent,
+  CheckCircle2,
+  Layers,
+  CreditCard,
 } from 'lucide-react';
 
 interface InvoiceFormProps {
@@ -53,8 +57,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
     setSerialNo((prev) => incrementSerialNow('valuation', prev));
   };
 
-  const gstAmount = calculateGST(data.charges.serviceCharges, data.charges.gstRate);
-  const totalAmount = calculateTotal(data.charges.serviceCharges, gstAmount);
+  const valCalc = calculateValuationInvoice(data.charges);
 
   // Auto-update meta fields when in Auto mode
   useEffect(() => {
@@ -127,7 +130,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <FileText className="w-5 h-5 text-indigo-400" />
-            Invoice Parameters
+            Bank Valuation Invoice
           </h2>
           <p className="text-xs text-slate-400 mt-1">
             Fill in the details to update the live invoice preview instantly.
@@ -141,6 +144,54 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
           <RefreshCw className="w-3.5 h-3.5" />
           Reset Defaults
         </button>
+      </div>
+
+      {/* Document Format & Header Controls */}
+      <div className="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-3">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <div className="text-xs font-semibold text-slate-300 flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-indigo-400" />
+              Document Header Title
+            </div>
+            <div className="text-sm font-bold text-emerald-400 mt-0.5 tracking-wide">
+              {data.headerTitle || 'INVOICE CASH/CREDIT CARD'}
+            </div>
+          </div>
+
+          {/* Single Portion vs Full Invoice Toggle */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-slate-400">Layout Format:</span>
+            <div className="flex bg-slate-900 border border-slate-800 rounded-lg p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => onChange({ ...data, exportPortion: 'single' })}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-semibold transition-all ${
+                  (data.exportPortion || 'full') === 'single'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Single portion / half page (1 copy)"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                Single Portion (Half)
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ ...data, exportPortion: 'full' })}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-semibold transition-all ${
+                  (data.exportPortion || 'full') === 'full'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+                title="Full invoice with dual copies like present (2 copies)"
+              >
+                <Layers className="w-3.5 h-3.5" />
+                Full Invoice (2 Copies)
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* 1. Invoice Metadata Section with Auto/Manual Toggle */}
@@ -492,45 +543,219 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
             />
           </div>
         </div>
+
+        {/* Extra / Additional Property Info (Optional) */}
+        <div className="pt-1">
+          <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
+            <span>Additional Property Details <span className="text-slate-500 font-normal">(Optional)</span></span>
+            <span className="text-[10px] text-slate-500">Leave empty if not needed</span>
+          </label>
+          <textarea
+            rows={2}
+            value={data.property.additionalInfo || ''}
+            onChange={(e) => handlePropertyChange('additionalInfo', e.target.value)}
+            className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white focus:outline-none focus:border-indigo-500 resize-none"
+            placeholder="e.g. Near Bus Stand, East by R&B Road, Boundary notes, or any extra details..."
+          />
+        </div>
       </div>
 
       {/* 4. Charges & Calculations */}
       <div className="space-y-4 pt-2 border-t border-slate-800">
-        <h3 className="text-sm font-semibold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
-          <DollarSign className="w-4 h-4" /> Service Charges & Auto Calculations
-        </h3>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <h3 className="text-sm font-semibold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
+            <DollarSign className="w-4 h-4" /> Service Charges & Auto Calculations
+          </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* GST Mode Segmented Selector */}
+          <div className="flex bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs gap-1">
+            <button
+              type="button"
+              onClick={() => handleChargesChange('gstMode', 'split')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                (data.charges.gstMode || 'split') === 'split'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <Percent className="w-3.5 h-3.5" />
+              2 Parts GST (CGST + SGST)
+            </button>
+            <button
+              type="button"
+              onClick={() => handleChargesChange('gstMode', 'none')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                data.charges.gstMode === 'none'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Without GST (Direct)
+            </button>
+            <button
+              type="button"
+              onClick={() => handleChargesChange('gstMode', 'other')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                data.charges.gstMode === 'other'
+                  ? 'bg-amber-600 text-white shadow-md shadow-amber-600/30'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <DollarSign className="w-3.5 h-3.5" />
+              Other
+            </button>
+          </div>
+        </div>
+
+        {/* Inputs & Calculation Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* Base Service Charges */}
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">
               Service Charges (₹) <span className="text-red-400">*</span>
             </label>
             <input
               type="number"
+              min="0"
               value={data.charges.serviceCharges}
-              onChange={(e) => handleChargesChange('serviceCharges', e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === '-' || e.key === 'e') e.preventDefault();
+              }}
+              onChange={(e) => handleChargesChange('serviceCharges', e.target.value.replace(/-/g, ''))}
               className="w-full px-3 py-2 bg-slate-950 border border-indigo-500/50 rounded-lg text-sm text-white font-mono font-semibold focus:outline-none focus:border-indigo-400"
               placeholder="e.g. 7500"
               required
             />
+            <span className="text-[10px] text-slate-500 mt-0.5 block">
+              Base valuation service amount
+            </span>
           </div>
 
-          {/* Auto-Calculated GST */}
-          <div className="bg-slate-950/80 p-3 rounded-lg border border-slate-800">
-            <div className="text-[11px] font-medium text-slate-400">GST (18% Auto)</div>
-            <div className="text-base font-bold text-emerald-400 font-mono mt-1">
-              ₹ {gstAmount.toLocaleString('en-IN')}
+          {/* Conditional Taxes / Cards */}
+          {(data.charges.gstMode || 'split') === 'split' && (
+            <>
+              {/* CGST Card */}
+              <div className="bg-slate-950/80 p-3 rounded-lg border border-slate-800">
+                <div className="flex justify-between items-center text-[11px] font-medium text-slate-400">
+                  <span>Part 1: CGST (9%)</span>
+                  <span className="text-indigo-400 font-mono">Central</span>
+                </div>
+                <div className="text-base font-bold text-indigo-300 font-mono mt-1">
+                  ₹ {valCalc.cgstAmount.toLocaleString('en-IN')}
+                </div>
+                <div className="text-[10px] text-slate-500 mt-0.5">
+                  9% of ₹{valCalc.baseAmount.toLocaleString('en-IN')}
+                </div>
+              </div>
+
+              {/* SGST Card */}
+              <div className="bg-slate-950/80 p-3 rounded-lg border border-slate-800">
+                <div className="flex justify-between items-center text-[11px] font-medium text-slate-400">
+                  <span>Part 2: SGST (9%)</span>
+                  <span className="text-indigo-400 font-mono">State</span>
+                </div>
+                <div className="text-base font-bold text-indigo-300 font-mono mt-1">
+                  ₹ {valCalc.sgstAmount.toLocaleString('en-IN')}
+                </div>
+                <div className="text-[10px] text-slate-500 mt-0.5">
+                  9% of ₹{valCalc.baseAmount.toLocaleString('en-IN')}
+                </div>
+              </div>
+            </>
+          )}
+
+          {data.charges.gstMode === 'none' && (
+            <div className="col-span-1 md:col-span-1 lg:col-span-2 bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/30 flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+              <div>
+                <div className="text-xs font-semibold text-emerald-300">
+                  Without GST Mode Enabled
+                </div>
+                <div className="text-[11px] text-emerald-400/90 mt-0.5">
+                  No tax is added. Entered Service Charge directly displays as the invoice total.
+                </div>
+              </div>
             </div>
-            <div className="text-[10px] text-slate-500 mt-0.5">18% of Service Charges</div>
+          )}
+
+          {data.charges.gstMode === 'other' && (
+            <>
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">
+                  Other Tax Rate (%)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={data.charges.otherRate ?? 18}
+                  onKeyDown={(e) => {
+                    if (e.key === '-' || e.key === 'e') e.preventDefault();
+                  }}
+                  onChange={(e) => handleChargesChange('otherRate', Math.max(0, Number(e.target.value.replace(/-/g, ''))))}
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-sm text-white font-mono"
+                  placeholder="e.g. 18"
+                />
+              </div>
+
+              <div className="bg-slate-950/80 p-3 rounded-lg border border-slate-800">
+                <div className="text-[11px] font-medium text-slate-400">
+                  Calculated Tax ({data.charges.otherRate ?? 18}%)
+                </div>
+                <div className="text-base font-bold text-amber-400 font-mono mt-1">
+                  ₹ {valCalc.gstAmount.toLocaleString('en-IN')}
+                </div>
+                <div className="text-[10px] text-slate-500 mt-0.5">
+                  {data.charges.otherRate ?? 18}% of Service Charges
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Additional Other Charges & Total Payable */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+          {/* Optional Other Charges */}
+          <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 flex items-center justify-between gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-300">
+                Other Charges (₹)
+              </label>
+              <span className="text-[10px] text-slate-500">
+                Incidental, conveyance, or other charges
+              </span>
+            </div>
+            <input
+              type="number"
+              min="0"
+              value={data.charges.otherCharges ?? 0}
+              onKeyDown={(e) => {
+                if (e.key === '-' || e.key === 'e') e.preventDefault();
+              }}
+              onChange={(e) => handleChargesChange('otherCharges', e.target.value.replace(/-/g, ''))}
+              className="w-28 px-3 py-1.5 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white font-mono text-right focus:outline-none focus:border-indigo-500"
+              placeholder="0"
+            />
           </div>
 
           {/* Auto-Calculated Total */}
-          <div className="bg-slate-950/80 p-3 rounded-lg border border-indigo-950/60">
-            <div className="text-[11px] font-medium text-indigo-300">Total Payable</div>
-            <div className="text-lg font-extrabold text-white font-mono mt-0.5">
-              ₹ {totalAmount.toLocaleString('en-IN')}
+          <div className="bg-gradient-to-r from-slate-950 to-indigo-950/40 p-3 rounded-xl border border-indigo-900/60 flex items-center justify-between">
+            <div>
+              <div className="text-[11px] font-medium text-indigo-300">
+                Total Amount Payable
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">
+                {data.charges.gstMode === 'none'
+                  ? 'Base Service Charges directly'
+                  : data.charges.gstMode === 'other'
+                  ? `Service Charges + Tax (${data.charges.otherRate ?? 18}%)`
+                  : 'Service Charges + CGST (9%) + SGST (9%)'}
+                {valCalc.otherAmount > 0 ? ` + Other (₹${valCalc.otherAmount})` : ''}
+              </div>
             </div>
-            <div className="text-[10px] text-indigo-400/80 mt-0.5">Service Charges + GST</div>
+            <div className="text-xl font-extrabold text-emerald-400 font-mono">
+              ₹ {valCalc.totalAmount.toLocaleString('en-IN')}
+            </div>
           </div>
         </div>
       </div>
@@ -575,15 +800,37 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
                 value={data.valuer.bankName}
                 onChange={(e) => handleValuerChange('bankName', e.target.value)}
                 className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white"
+                placeholder="e.g. State Bank of India"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">Valuer Branch</label>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Branch Name</label>
               <input
                 type="text"
                 value={data.valuer.branchName}
                 onChange={(e) => handleValuerChange('branchName', e.target.value)}
                 className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white"
+                placeholder="e.g. Zilla Parishad Jn. Branch, Srikakulam"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">IFSC Code (Optional)</label>
+              <input
+                type="text"
+                value={data.valuer.ifsc || ''}
+                onChange={(e) => handleValuerChange('ifsc', e.target.value)}
+                className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white font-mono uppercase"
+                placeholder="e.g. SBIN0001234"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Other Valuer Info (New / Optional)</label>
+              <input
+                type="text"
+                value={data.valuer.other || ''}
+                onChange={(e) => handleValuerChange('other', e.target.value)}
+                className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white"
+                placeholder="e.g. Reg. No / PAN / Phone: 9876543210"
               />
             </div>
           </div>

@@ -4,6 +4,8 @@ export const DEFAULT_INVOICE_DATA: InvoiceData = {
   invoiceNo: 'SSC2026/JULY/93',
   invoiceDate: '24-07-2026',
   valuationDate: '23-07-2026',
+  headerTitle: 'INVOICE CASH/CREDIT CARD',
+  exportPortion: 'full',
   recipient: {
     to: 'The Branch Manager',
     bank: 'State Bank of India',
@@ -26,16 +28,24 @@ export const DEFAULT_INVOICE_DATA: InvoiceData = {
     pinCode: '532432',
     propertyType: 'Rice Mill',
     propertyValue: 54595000,
+    additionalInfo: '',
   },
   charges: {
     serviceCharges: 7500,
-    gstRate: 18,
+    gstMode: 'split',
+    cgstRate: 9,
+    sgstRate: 9,
+    otherRate: 18,
+    otherCharges: 0,
+    otherDescription: 'Other Charges',
   },
   valuer: {
     name: 'B. Satyanarayana',
     accountNo: 'A/C NO.36230328613',
     bankName: 'State Bank of India',
     branchName: 'Zilla Parishad Jn. Branch, Srikakulam',
+    ifsc: '',
+    other: '',
   },
 };
 
@@ -76,8 +86,12 @@ export const DEFAULT_CONSTRUCTION_INVOICE_DATA: ConstructionInvoiceData = {
     ],
     hsnCode: '9954',
   },
+  headerTitle: 'INVOICE CASH/CREDIT CARD',
   amountBeforeGst: 3391724,
+  gstMode: 'manual',
   cgstRate: 9,
   sgstRate: 9,
+  manualCgstAmount: 305255,
+  manualSgstAmount: 305255,
   tdsRate: 2,
 };

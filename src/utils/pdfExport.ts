@@ -29,20 +29,26 @@ export async function downloadInvoicePDF(
       },
     });
 
-    // 2. Create A4 PDF and insert PNG
+    const isSinglePortion = element.getAttribute('data-portion') === 'single';
+    const imgHeight = isSinglePortion ? 148.5 : 297;
+
+    // 2. Create standard A4 Portrait PDF
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
-      compress: true,
+      compress: false,
     });
 
-    pdf.addImage(dataUrl, 'PNG', 0, 0, 210, 297, undefined, 'FAST');
+    pdf.addImage(dataUrl, 'PNG', 0, 0, 210, imgHeight, undefined, 'FAST');
     const safeInvoiceNo = (invoiceNo || 'invoice').replace(/[\/\\?%*:|"<>]/g, '_');
-    pdf.save(`Invoice_${safeInvoiceNo}.pdf`);
+    pdf.save(`Invoice_${safeInvoiceNo}${isSinglePortion ? '_Half' : ''}.pdf`);
   } catch (error) {
     console.error('html-to-image failed, trying html2canvas-pro fallback:', error);
     try {
+      const isSinglePortion = element.getAttribute('data-portion') === 'single';
+      const imgHeight = isSinglePortion ? 148.5 : 297;
+
       const html2canvasPro = (await import('html2canvas-pro')).default;
       const canvas = await html2canvasPro(element, {
         scale: 2,
@@ -55,10 +61,11 @@ export async function downloadInvoicePDF(
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
+        compress: false,
       });
-      pdf.addImage(imgData, 'PNG', 0, 0, 210, 297);
+      pdf.addImage(imgData, 'PNG', 0, 0, 210, imgHeight);
       const safeInvoiceNo = (invoiceNo || 'invoice').replace(/[\/\\?%*:|"<>]/g, '_');
-      pdf.save(`Invoice_${safeInvoiceNo}.pdf`);
+      pdf.save(`Invoice_${safeInvoiceNo}${isSinglePortion ? '_Half' : ''}.pdf`);
     } catch (fallbackErr) {
       console.error('All PDF export methods failed:', fallbackErr);
       alert('Export failed. Please click "Print Invoice" and select "Save as PDF" in the print dialog.');

@@ -24,6 +24,8 @@ import {
   Lock,
   Unlock,
   Sparkles,
+  Percent,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface ConstructionInvoiceFormProps {
@@ -39,7 +41,6 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
 }) => {
   const [showSupplierSettings, setShowSupplierSettings] = useState(false);
   const [isManualEdit, setIsManualEdit] = useState(false);
-  const [isCustomTaxRates, setIsCustomTaxRates] = useState(false);
   const [serialNo, setSerialNo] = useState(() => {
     return getAndConsumeSerial('construction', '92');
   });
@@ -52,21 +53,14 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
     setSerialNo((prev) => incrementSerialNow('construction', prev));
   };
 
-  const handleResetTaxRates = () => {
-    onChange({
-      ...data,
-      cgstRate: 9,
-      sgstRate: 9,
-      tdsRate: 2,
-    });
-    setIsCustomTaxRates(false);
-  };
-
   const totals = calculateConstructionInvoice(
     data.amountBeforeGst,
     data.cgstRate,
     data.sgstRate,
-    data.tdsRate
+    data.tdsRate,
+    data.gstMode,
+    data.manualCgstAmount,
+    data.manualSgstAmount
   );
 
   // Auto-generate invoice number and today's date when locked
@@ -200,6 +194,19 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="md:col-span-2">
+            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
+              <span>Invoice Header Title</span>
+              <span className="text-[10px] text-slate-500 font-mono">Prints at top of invoice</span>
+            </label>
+            <input
+              type="text"
+              value={data.headerTitle ?? 'INVOICE CASH/CREDIT CARD'}
+              onChange={(e) => handleFieldChange('headerTitle', e.target.value)}
+              className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-sm font-bold text-white uppercase tracking-wider focus:outline-none focus:border-indigo-500"
+              placeholder="INVOICE CASH/CREDIT CARD"
+            />
+          </div>
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
               <span>Invoice No.</span>
@@ -352,122 +359,240 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
       <div className="space-y-4 pt-2 border-t border-slate-800">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <h3 className="text-sm font-semibold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
-            <DollarSign className="w-4 h-4" /> Financials, Taxes & Deductions
+            <DollarSign className="w-4 h-4" /> Financials & GST Model
           </h3>
 
-          <div className="flex items-center gap-2">
+          {/* GST Mode Segmented Selector */}
+          <div className="flex flex-wrap bg-slate-950 border border-slate-800 rounded-xl p-1 text-xs gap-1">
             <button
               type="button"
-              onClick={() => {
-                if (isCustomTaxRates) {
-                  handleResetTaxRates();
-                } else {
-                  setIsCustomTaxRates(true);
-                }
-              }}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all border ${
-                isCustomTaxRates
-                  ? 'bg-amber-500/10 text-amber-300 border-amber-500/30 hover:bg-amber-500/20'
-                  : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20'
+              onClick={() => handleFieldChange('gstMode', 'manual')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                (data.gstMode || 'manual') !== 'none'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
               }`}
             >
-              {isCustomTaxRates ? (
-                <>
-                  <Unlock className="w-3 h-3 text-amber-400" />
-                  Custom Rates (Unlocked)
-                </>
-              ) : (
-                <>
-                  <Lock className="w-3 h-3 text-emerald-400" />
-                  Standard Rates Fixed (9%, 9%, 2%)
-                </>
-              )}
+              <Percent className="w-3.5 h-3.5" />
+              Manual GST (%)
+            </button>
+            <button
+              type="button"
+              onClick={() => handleFieldChange('gstMode', 'none')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                data.gstMode === 'none'
+                  ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-900'
+              }`}
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              Without GST (Direct Amount)
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">
-              Amount Before GST (₹) <span className="text-red-400">*</span>
-            </label>
-            <input
-              type="number"
-              value={data.amountBeforeGst}
-              onChange={(e) => handleFieldChange('amountBeforeGst', e.target.value)}
-              className="w-full px-3 py-2 bg-slate-950 border border-indigo-500/50 rounded-lg text-sm text-white font-mono font-semibold focus:outline-none focus:border-indigo-400"
-              placeholder="e.g. 3391724"
-              required
-            />
+        {/* Dynamic Inputs based on GST Mode */}
+        {data.gstMode === 'none' ? (
+          <div className="space-y-3">
+            <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl flex items-center justify-between text-xs text-emerald-300">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span>
+                  <strong>Without GST Mode Active:</strong> No GST is added. The entered amount is directly the Total Invoice Value.
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">
+                  Entered Invoice Amount (₹) <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={data.amountBeforeGst}
+                  onKeyDown={(e) => {
+                    if (e.key === '-' || e.key === 'e') e.preventDefault();
+                  }}
+                  onChange={(e) => handleFieldChange('amountBeforeGst', e.target.value.replace(/-/g, ''))}
+                  className="w-full px-3 py-2 bg-slate-950 border border-emerald-500/50 rounded-lg text-sm text-white font-mono font-semibold focus:outline-none focus:border-emerald-400"
+                  placeholder="e.g. 3391724"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
+                  <span>TDS Deduction (%)</span>
+                  <span className="text-[10px] text-slate-400">Optional (Set to 0 if not deducted)</span>
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={data.tdsRate}
+                  onKeyDown={(e) => {
+                    if (e.key === '-' || e.key === 'e') e.preventDefault();
+                  }}
+                  onChange={(e) =>
+                    handleFieldChange('tdsRate', e.target.value === '' ? '' : e.target.value.replace(/-/g, ''))
+                  }
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-sm font-mono text-center text-white focus:outline-none focus:border-indigo-500"
+                  placeholder="0 or 2"
+                />
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
-              <span>CGST (%)</span>
-              <span className="text-[10px] text-emerald-400 font-mono">Standard 9%</span>
-            </label>
-            <input
-              type="number"
-              value={data.cgstRate}
-              readOnly={!isCustomTaxRates}
-              onChange={(e) =>
-                handleFieldChange('cgstRate', e.target.value === '' ? '' : parseFloat(e.target.value))
-              }
-              className={`w-full px-3 py-2 border rounded-lg text-sm font-mono text-center transition-colors ${
-                !isCustomTaxRates
-                  ? 'bg-slate-950/60 border-slate-800 text-emerald-400 font-bold cursor-not-allowed opacity-90'
-                  : 'bg-slate-950 border-slate-700 text-white focus:outline-none focus:border-indigo-500'
-              }`}
-            />
+        ) : (
+          /* Manual GST Percentage Mode */
+          <div className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">
+                  Amount Before GST (₹) <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={data.amountBeforeGst}
+                  onKeyDown={(e) => {
+                    if (e.key === '-' || e.key === 'e') e.preventDefault();
+                  }}
+                  onChange={(e) => handleFieldChange('amountBeforeGst', e.target.value.replace(/-/g, ''))}
+                  className="w-full px-3 py-2 bg-slate-950 border border-indigo-500/50 rounded-lg text-sm text-white font-mono font-semibold focus:outline-none focus:border-indigo-400"
+                  placeholder="e.g. 3391724"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
+                  <span>CGST (%)</span>
+                  <span className="text-[10px] text-indigo-400 font-mono">Manual % (Min 0)</span>
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={data.cgstRate}
+                  onKeyDown={(e) => {
+                    if (e.key === '-' || e.key === 'e') e.preventDefault();
+                  }}
+                  onChange={(e) =>
+                    handleFieldChange('cgstRate', e.target.value === '' ? '' : e.target.value.replace(/-/g, ''))
+                  }
+                  className="w-full px-3 py-2 bg-slate-950 border border-indigo-500/40 rounded-lg text-sm font-mono text-center text-emerald-400 font-semibold focus:outline-none focus:border-indigo-400"
+                  placeholder="e.g. 9"
+                />
+                <div className="text-[10px] text-slate-400 mt-1 text-center font-mono">
+                  = {formatRupeeAmount(totals.cgstAmount)}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
+                  <span>SGST (%)</span>
+                  <span className="text-[10px] text-indigo-400 font-mono">Manual % (Min 0)</span>
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={data.sgstRate}
+                  onKeyDown={(e) => {
+                    if (e.key === '-' || e.key === 'e') e.preventDefault();
+                  }}
+                  onChange={(e) =>
+                    handleFieldChange('sgstRate', e.target.value === '' ? '' : e.target.value.replace(/-/g, ''))
+                  }
+                  className="w-full px-3 py-2 bg-slate-950 border border-indigo-500/40 rounded-lg text-sm font-mono text-center text-emerald-400 font-semibold focus:outline-none focus:border-indigo-400"
+                  placeholder="e.g. 9"
+                />
+                <div className="text-[10px] text-slate-400 mt-1 text-center font-mono">
+                  = {formatRupeeAmount(totals.sgstAmount)}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
+                  <span>TDS (%)</span>
+                  <span className="text-[10px] text-indigo-400 font-mono">Standard 2%</span>
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={data.tdsRate}
+                  onKeyDown={(e) => {
+                    if (e.key === '-' || e.key === 'e') e.preventDefault();
+                  }}
+                  onChange={(e) =>
+                    handleFieldChange('tdsRate', e.target.value === '' ? '' : e.target.value.replace(/-/g, ''))
+                  }
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-sm font-mono text-center text-white focus:outline-none focus:border-indigo-500"
+                  placeholder="2"
+                />
+                <div className="text-[10px] text-slate-400 mt-1 text-center font-mono">
+                  = Less: {formatRupeeAmount(totals.tdsAmount)}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Percentage Presets */}
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-slate-800/60">
+              <span className="text-[11px] text-slate-400">Quick Tax Presets:</span>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...data, cgstRate: 9, sgstRate: 9 })}
+                  className="px-2.5 py-1 text-[11px] font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-md border border-slate-700 transition-colors"
+                >
+                  9% + 9% (18% Total)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...data, cgstRate: 6, sgstRate: 6 })}
+                  className="px-2.5 py-1 text-[11px] font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-md border border-slate-700 transition-colors"
+                >
+                  6% + 6% (12% Total)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...data, cgstRate: 2.5, sgstRate: 2.5 })}
+                  className="px-2.5 py-1 text-[11px] font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-md border border-slate-700 transition-colors"
+                >
+                  2.5% + 2.5% (5% Total)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...data, cgstRate: 14, sgstRate: 14 })}
+                  className="px-2.5 py-1 text-[11px] font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-md border border-slate-700 transition-colors"
+                >
+                  14% + 14% (28% Total)
+                </button>
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
-              <span>SGST (%)</span>
-              <span className="text-[10px] text-emerald-400 font-mono">Standard 9%</span>
-            </label>
-            <input
-              type="number"
-              value={data.sgstRate}
-              readOnly={!isCustomTaxRates}
-              onChange={(e) =>
-                handleFieldChange('sgstRate', e.target.value === '' ? '' : parseFloat(e.target.value))
-              }
-              className={`w-full px-3 py-2 border rounded-lg text-sm font-mono text-center transition-colors ${
-                !isCustomTaxRates
-                  ? 'bg-slate-950/60 border-slate-800 text-emerald-400 font-bold cursor-not-allowed opacity-90'
-                  : 'bg-slate-950 border-slate-700 text-white focus:outline-none focus:border-indigo-500'
-              }`}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
-              <span>TDS (%)</span>
-              <span className="text-[10px] text-indigo-400 font-mono">Standard 2%</span>
-            </label>
-            <input
-              type="number"
-              value={data.tdsRate}
-              readOnly={!isCustomTaxRates}
-              onChange={(e) =>
-                handleFieldChange('tdsRate', e.target.value === '' ? '' : parseFloat(e.target.value))
-              }
-              className={`w-full px-3 py-2 border rounded-lg text-sm font-mono text-center transition-colors ${
-                !isCustomTaxRates
-                  ? 'bg-slate-950/60 border-slate-800 text-indigo-300 font-bold cursor-not-allowed opacity-90'
-                  : 'bg-slate-950 border-slate-700 text-white focus:outline-none focus:border-indigo-500'
-              }`}
-            />
-          </div>
-        </div>
+        )}
 
         {/* Live Auto-Calculated Financial Summary */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
           <div className="bg-slate-950/80 p-3 rounded-lg border border-slate-800">
-            <div className="text-[11px] font-medium text-slate-400">CGST + SGST ({data.cgstRate + data.sgstRate}%)</div>
+            <div className="text-[11px] font-medium text-slate-400">
+              {data.gstMode === 'none'
+                ? 'GST Tax Status'
+                : `Total GST (${(Number(data.cgstRate) || 0) + (Number(data.sgstRate) || 0)}%)`}
+            </div>
             <div className="text-sm font-bold text-emerald-400 font-mono mt-1">
-              {formatRupeeAmount(totals.cgstAmount + totals.sgstAmount)}
+              {data.gstMode === 'none'
+                ? '₹0.00 (Without GST)'
+                : formatRupeeAmount(totals.cgstAmount + totals.sgstAmount)}
             </div>
             <div className="text-[10px] text-slate-500 mt-0.5">
-              CGST: {formatRupeeAmount(totals.cgstAmount)} | SGST: {formatRupeeAmount(totals.sgstAmount)}
+              {data.gstMode === 'none'
+                ? 'No tax added to invoice'
+                : `CGST@${data.cgstRate}%: ${formatRupeeAmount(totals.cgstAmount)} | SGST@${data.sgstRate}%: ${formatRupeeAmount(totals.sgstAmount)}`}
             </div>
           </div>
 
@@ -482,7 +607,7 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
           </div>
 
           <div className="bg-slate-950/80 p-3 rounded-lg border border-indigo-900/60">
-            <div className="text-[11px] font-medium text-indigo-300">Net Payable After TDS ({data.tdsRate}%)</div>
+            <div className="text-[11px] font-medium text-indigo-300">Net Payable After TDS ({data.tdsRate || 0}%)</div>
             <div className="text-base font-extrabold text-emerald-300 font-mono mt-0.5">
               {formatRupeeAmount(totals.totalAfterTds)}
             </div>
