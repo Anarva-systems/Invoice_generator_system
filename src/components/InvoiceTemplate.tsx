@@ -101,7 +101,7 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data }) => {
           <div style={{ fontWeight: 'bold' }}>{data.recipient.branch || 'Main Branch'}</div>
           <div style={{ fontWeight: 'bold' }}>{data.recipient.district || 'Srikakulam District'}</div>
           {data.recipient.gstin && data.recipient.gstin.trim() !== '' && (
-            <div style={{ fontWeight: 'bold' }}>GSTIN: {data.recipient.gstin}</div>
+            <div style={{ fontWeight: 'bold' }}>GST Number: {data.recipient.gstin}</div>
           )}
           {data.recipient.other && data.recipient.other.trim() !== '' && (
             <div style={{ fontWeight: 'normal' }}>{data.recipient.other}</div>
