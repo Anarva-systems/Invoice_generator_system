@@ -85,7 +85,7 @@ export const ConstructionInvoiceTemplate: React.FC<ConstructionInvoiceTemplatePr
             color: '#000000',
           }}
         >
-          {data.headerTitle || 'INVOICE CASH/CREDIT CARD'}
+          {data.headerTitle || 'INVOICE CASH/CREDIT'}
         </h1>
       </div>
 

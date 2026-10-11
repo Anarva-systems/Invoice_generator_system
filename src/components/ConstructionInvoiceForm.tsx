@@ -139,11 +139,10 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
           <button
             type="button"
             onClick={() => setIsManualEdit(!isManualEdit)}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all border ${
-              isManualEdit
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-all border ${isManualEdit
                 ? 'bg-amber-500/10 text-amber-300 border-amber-500/30 hover:bg-amber-500/20'
                 : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/20'
-            }`}
+              }`}
           >
             {isManualEdit ? (
               <>
@@ -201,10 +200,10 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
             </label>
             <input
               type="text"
-              value={data.headerTitle ?? 'INVOICE CASH/CREDIT CARD'}
+              value={data.headerTitle ?? 'INVOICE CASH/CREDIT'}
               onChange={(e) => handleFieldChange('headerTitle', e.target.value)}
               className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-sm font-bold text-white uppercase tracking-wider focus:outline-none focus:border-indigo-500"
-              placeholder="INVOICE CASH/CREDIT CARD"
+              placeholder="INVOICE CASH/CREDIT"
             />
           </div>
           <div>
@@ -217,11 +216,10 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
               value={data.invoiceNo}
               onChange={(e) => handleFieldChange('invoiceNo', e.target.value)}
               readOnly={!isManualEdit}
-              className={`w-full px-3 py-2 border rounded-lg text-sm font-mono transition-colors ${
-                !isManualEdit
+              className={`w-full px-3 py-2 border rounded-lg text-sm font-mono transition-colors ${!isManualEdit
                   ? 'bg-slate-950/50 border-slate-800 text-white font-semibold cursor-not-allowed opacity-90'
                   : 'bg-slate-950 border-slate-700 text-white focus:outline-none focus:border-indigo-500'
-              }`}
+                }`}
               placeholder="e.g. No.SSC2026/July/92"
               required
             />
@@ -236,11 +234,10 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
               value={data.dated}
               onChange={(e) => handleFieldChange('dated', e.target.value)}
               readOnly={!isManualEdit}
-              className={`w-full px-3 py-2 border rounded-lg text-sm transition-colors ${
-                !isManualEdit
+              className={`w-full px-3 py-2 border rounded-lg text-sm transition-colors ${!isManualEdit
                   ? 'bg-slate-950/50 border-slate-800 text-slate-300 cursor-not-allowed opacity-90'
                   : 'bg-slate-950 border-slate-700 text-white focus:outline-none focus:border-indigo-500'
-              }`}
+                }`}
               placeholder="DD-MM-YYYY"
               required
             />
@@ -367,11 +364,10 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
             <button
               type="button"
               onClick={() => handleFieldChange('gstMode', 'manual')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-                (data.gstMode || 'manual') !== 'none'
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${(data.gstMode || 'manual') !== 'none'
                   ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-slate-900'
-              }`}
+                }`}
             >
               <Percent className="w-3.5 h-3.5" />
               Manual GST (%)
@@ -379,11 +375,10 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
             <button
               type="button"
               onClick={() => handleFieldChange('gstMode', 'none')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-                data.gstMode === 'none'
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${data.gstMode === 'none'
                   ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-slate-900'
-              }`}
+                }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               Without GST (Direct Amount)

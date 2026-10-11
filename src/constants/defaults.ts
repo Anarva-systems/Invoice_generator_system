@@ -11,6 +11,8 @@ export const DEFAULT_INVOICE_DATA: InvoiceData = {
     bank: 'State Bank of India',
     branch: 'Main Branch',
     district: 'Srikakulam District',
+    gstin: '',
+    other: '',
   },
   property: {
     ownerCompany: 'M/s. Sri Venkata Santhammani',

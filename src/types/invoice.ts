@@ -3,6 +3,8 @@ export interface RecipientInfo {
   bank: string;
   branch: string;
   district: string;
+  gstin?: string;
+  other?: string;
 }
 
 export interface PropertyInfo {

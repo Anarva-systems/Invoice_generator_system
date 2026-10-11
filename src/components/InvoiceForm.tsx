@@ -155,7 +155,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
               Document Header Title
             </div>
             <div className="text-sm font-bold text-emerald-400 mt-0.5 tracking-wide">
-              {data.headerTitle || 'INVOICE CASH/CREDIT CARD'}
+              {data.headerTitle || 'INVOICE CASH/CREDIT'}
             </div>
           </div>
 
@@ -371,6 +371,26 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
                 value={data.recipient.district}
                 onChange={(e) => handleRecipientChange('district', e.target.value)}
                 className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">GST Number</label>
+              <input
+                type="text"
+                value={data.recipient.gstin || ''}
+                onChange={(e) => handleRecipientChange('gstin', e.target.value)}
+                placeholder="e.g. 37AAAAA0000A1Z5"
+                className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white uppercase font-mono placeholder:normal-case placeholder:font-sans placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Other</label>
+              <input
+                type="text"
+                value={data.recipient.other || ''}
+                onChange={(e) => handleRecipientChange('other', e.target.value)}
+                placeholder="e.g. Branch Code / Additional info"
+                className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
               />
             </div>
           </div>
