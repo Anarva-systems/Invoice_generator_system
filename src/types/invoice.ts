@@ -48,7 +48,7 @@ export interface InvoiceData {
   invoiceNo: string;
   invoiceDate: string;
   valuationDate: string;
-  headerTitle: string; // 'INVOICE CASH/CREDIT CARD'
+  headerTitle: string; // 'INVOICE CASH/CREDIT'
   exportPortion: InvoicePortion; // 'single' | 'full'
   recipient: RecipientInfo;
   property: PropertyInfo;
