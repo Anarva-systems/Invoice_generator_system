@@ -41,6 +41,7 @@ export interface ValuerInfo {
   bankName: string;
   branchName: string;
   ifsc?: string; // Optional IFSC Code
+  gstNo?: string; // Optional GST Number
   other?: string; // Optional custom footer/valuer info
 }
 

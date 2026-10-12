@@ -805,6 +805,16 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
               />
             </div>
             <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">GST Number</label>
+              <input
+                type="text"
+                value={data.valuer.gstNo || ''}
+                onChange={(e) => handleValuerChange('gstNo', e.target.value)}
+                placeholder="e.g. 37AAAAA0000A1Z5"
+                className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white uppercase font-mono placeholder:normal-case placeholder:font-sans placeholder:text-slate-600 focus:outline-none focus:border-indigo-500"
+              />
+            </div>
+            <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Account Number</label>
               <input
                 type="text"

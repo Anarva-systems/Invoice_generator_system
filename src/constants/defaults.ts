@@ -47,6 +47,7 @@ export const DEFAULT_INVOICE_DATA: InvoiceData = {
     bankName: 'State Bank of India',
     branchName: 'Zilla Parishad Jn. Branch, Srikakulam',
     ifsc: '',
+    gstNo: '',
     other: '',
   },
 };

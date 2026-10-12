@@ -326,6 +326,9 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data }) => {
         <div>
           <div style={{ fontWeight: 'normal', marginBottom: '1px' }}>From</div>
           <div style={{ fontWeight: 'bold' }}>{data.valuer.name}</div>
+          {data.valuer.gstNo && data.valuer.gstNo.trim() !== '' && (
+            <div style={{ fontWeight: 'bold' }}>GST Number: {data.valuer.gstNo}</div>
+          )}
           <div style={{ fontWeight: 'bold' }}>{data.valuer.accountNo}</div>
           <div style={{ fontWeight: 'normal' }}>{data.valuer.bankName}</div>
           <div style={{ fontWeight: 'normal' }}>{data.valuer.branchName}</div>
