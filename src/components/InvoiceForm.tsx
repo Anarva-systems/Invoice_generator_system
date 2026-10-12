@@ -155,7 +155,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
               Document Header Title
             </div>
             <div className="text-sm font-bold text-emerald-400 mt-0.5 tracking-wide">
-              {data.headerTitle || 'INVOICE CASH/CREDIT'}
+              {data.headerTitle || 'TAX INVOICE CASH/CREDIT'}
             </div>
           </div>
 

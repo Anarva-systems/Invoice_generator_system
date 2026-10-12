@@ -4,7 +4,7 @@ export const DEFAULT_INVOICE_DATA: InvoiceData = {
   invoiceNo: 'SSC2026/JULY/93',
   invoiceDate: '24-07-2026',
   valuationDate: '23-07-2026',
-  headerTitle: 'INVOICE CASH/CREDIT',
+  headerTitle: 'TAX INVOICE CASH/CREDIT',
   exportPortion: 'full',
   recipient: {
     to: 'The Branch Manager',
@@ -89,7 +89,7 @@ export const DEFAULT_CONSTRUCTION_INVOICE_DATA: ConstructionInvoiceData = {
     ],
     hsnCode: '9954',
   },
-  headerTitle: 'INVOICE CASH/CREDIT',
+  headerTitle: 'TAX INVOICE CASH/CREDIT',
   amountBeforeGst: 3391724,
   gstMode: 'manual',
   cgstRate: 9,

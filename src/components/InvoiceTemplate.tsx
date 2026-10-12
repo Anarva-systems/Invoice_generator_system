@@ -78,7 +78,7 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data }) => {
             color: '#000000',
           }}
         >
-          {data.headerTitle || 'INVOICE CASH/CREDIT'}
+          {data.headerTitle || 'TAX INVOICE CASH/CREDIT'}
         </h1>
       </div>
 

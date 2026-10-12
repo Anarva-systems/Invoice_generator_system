@@ -200,10 +200,10 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
             </label>
             <input
               type="text"
-              value={data.headerTitle ?? 'INVOICE CASH/CREDIT'}
+              value={data.headerTitle ?? 'TAX INVOICE CASH/CREDIT'}
               onChange={(e) => handleFieldChange('headerTitle', e.target.value)}
               className="w-full px-3 py-2 bg-slate-950 border border-slate-700 rounded-lg text-sm font-bold text-white uppercase tracking-wider focus:outline-none focus:border-indigo-500"
-              placeholder="INVOICE CASH/CREDIT"
+              placeholder="TAX INVOICE CASH/CREDIT"
             />
           </div>
           <div>
