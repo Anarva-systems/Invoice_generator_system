@@ -1,4 +1,9 @@
-import type { InvoiceData, ConstructionInvoiceData } from '../types/invoice';
+import type {
+  InvoiceData,
+  ConstructionInvoiceData,
+  ClientReceiptData,
+  LaborPayslipData,
+} from '../types/invoice';
 
 export const DEFAULT_INVOICE_DATA: InvoiceData = {
   invoiceNo: 'SSC2026/JULY/93',
@@ -97,4 +102,67 @@ export const DEFAULT_CONSTRUCTION_INVOICE_DATA: ConstructionInvoiceData = {
   manualCgstAmount: 305255,
   manualSgstAmount: 305255,
   tdsRate: 2,
+};
+
+export const DEFAULT_CLIENT_RECEIPT_DATA: ClientReceiptData = {
+  receiptNo: 'SSC-RCPT-2026/042',
+  receiptDate: '17-10-2026',
+  referenceNo: 'SSC2026/OCT/96',
+  headerTitle: 'CLIENT PAYMENT RECEIPT',
+  client: {
+    name: 'Sri Varanasi Kantha Rao',
+    companyName: 'M/s. Sri Venkata Santhammani Modern Rice Mill',
+    phone: '9848012345',
+    address: 'Lingalavalasa Village, Jalumuru Mandal, Srikakulam Dist.',
+    gstin: '37AAAAA0000A1Z5',
+  },
+  payment: {
+    mode: 'Bank Transfer (NEFT/RTGS)',
+    amount: 150000,
+    transactionRef: 'UTR98374829104',
+    transactionDate: '17-10-2026',
+    bankName: 'State Bank of India',
+    paymentTowards: 'Part Payment for Construction Mobilization & Civil Works',
+    totalBillAmount: 500000,
+    balanceRemaining: 350000,
+  },
+  company: {
+    name: 'SATYA SAI CONSTRUCTIONS',
+    tagline: 'Engineers, Approved Valuers & Commercial Contractors',
+    address: 'Opp. Zilla Parishad, Srikakulam - 532001, Andhra Pradesh',
+    gstin: '37BSZPS7072Q1ZT',
+    pan: 'BSZPS7072Q',
+    authorizedSignatory: 'B. Satyanarayana',
+  },
+  notes: 'Thank you for your prompt payment. Subject to realization of cheque/transfer.',
+};
+
+export const DEFAULT_LABOR_PAYSLIP_DATA: LaborPayslipData = {
+  voucherNo: 'SSC-LABOR-2026/108',
+  paymentDate: '17-10-2026',
+  wagePeriod: 'Weekly: 11-10-2026 to 17-10-2026',
+  siteLocation: 'Divine Saviour English Medium School Site, Peddapalem, Surubujjili',
+  worker: {
+    name: 'K. Appa Rao',
+    workerId: 'SSC-LAB-019',
+    trade: 'Mason (మేస్త్రి)',
+    phone: '9988776655',
+    aadhaarLast4: '4589',
+  },
+  wages: {
+    dailyRate: 950,
+    daysWorked: 6,
+    overtimeHours: 4,
+    overtimeRatePerHour: 150,
+    advanceDeduction: 500,
+    otherAllowance: 0,
+    paymentMode: 'Cash',
+    transactionRef: '',
+  },
+  supervisor: {
+    companyName: 'SATYA SAI CONSTRUCTIONS',
+    supervisorName: 'B. Satyanarayana',
+    siteIncharge: 'Site Supervisor / In-Charge',
+  },
+  remarks: 'Weekly wage settlement cleared.',
 };

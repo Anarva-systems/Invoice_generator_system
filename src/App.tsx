@@ -1,10 +1,25 @@
 import React, { useState, useRef } from 'react';
-import type { InvoiceData, ConstructionInvoiceData, ActiveTemplate } from './types/invoice';
-import { DEFAULT_INVOICE_DATA, DEFAULT_CONSTRUCTION_INVOICE_DATA } from './constants/defaults';
+import type {
+  InvoiceData,
+  ConstructionInvoiceData,
+  ClientReceiptData,
+  LaborPayslipData,
+  ActiveTemplate,
+} from './types/invoice';
+import {
+  DEFAULT_INVOICE_DATA,
+  DEFAULT_CONSTRUCTION_INVOICE_DATA,
+  DEFAULT_CLIENT_RECEIPT_DATA,
+  DEFAULT_LABOR_PAYSLIP_DATA,
+} from './constants/defaults';
 import { InvoiceForm } from './components/InvoiceForm';
 import { InvoiceTemplate } from './components/InvoiceTemplate';
 import { ConstructionInvoiceForm } from './components/ConstructionInvoiceForm';
 import { ConstructionInvoiceTemplate } from './components/ConstructionInvoiceTemplate';
+import { ClientReceiptForm } from './components/ClientReceiptForm';
+import { ClientReceiptTemplate } from './components/ClientReceiptTemplate';
+import { LaborPayslipForm } from './components/LaborPayslipForm';
+import { LaborPayslipTemplate } from './components/LaborPayslipTemplate';
 import { Toolbar } from './components/Toolbar';
 import { AccessGate } from './components/AccessGate';
 import { downloadInvoicePDF } from './utils/pdfExport';
@@ -22,14 +37,26 @@ export const App: React.FC = () => {
   });
   const [activeTemplate, setActiveTemplate] = useState<ActiveTemplate>(() => {
     const saved = localStorage.getItem('invoice_active_template');
-    if (saved === 'valuation' || saved === 'construction') {
-      return saved;
+    if (
+      saved === 'valuation' ||
+      saved === 'construction' ||
+      saved === 'client_receipt' ||
+      saved === 'labor_payslip'
+    ) {
+      return saved as ActiveTemplate;
     }
     return 'valuation';
   });
+
   const [valuationData, setValuationData] = useState<InvoiceData>(DEFAULT_INVOICE_DATA);
   const [constructionData, setConstructionData] = useState<ConstructionInvoiceData>(
     DEFAULT_CONSTRUCTION_INVOICE_DATA
+  );
+  const [clientReceiptData, setClientReceiptData] = useState<ClientReceiptData>(
+    DEFAULT_CLIENT_RECEIPT_DATA
+  );
+  const [laborPayslipData, setLaborPayslipData] = useState<LaborPayslipData>(
+    DEFAULT_LABOR_PAYSLIP_DATA
   );
 
   const [activeTab, setActiveTab] = useState<'form' | 'preview'>('form');
@@ -68,8 +95,12 @@ export const App: React.FC = () => {
     ) {
       if (activeTemplate === 'valuation') {
         setValuationData(DEFAULT_INVOICE_DATA);
-      } else {
+      } else if (activeTemplate === 'construction') {
         setConstructionData(DEFAULT_CONSTRUCTION_INVOICE_DATA);
+      } else if (activeTemplate === 'client_receipt') {
+        setClientReceiptData(DEFAULT_CLIENT_RECEIPT_DATA);
+      } else if (activeTemplate === 'labor_payslip') {
+        setLaborPayslipData(DEFAULT_LABOR_PAYSLIP_DATA);
       }
       showNotification('Form reset to reference defaults.');
     }
@@ -81,29 +112,43 @@ export const App: React.FC = () => {
         showNotification('Please enter an Invoice Number.');
         return;
       }
-    } else {
+    } else if (activeTemplate === 'construction') {
       if (!constructionData.invoiceNo.trim()) {
         showNotification('Please enter an Invoice Number.');
         return;
       }
+    } else if (activeTemplate === 'client_receipt') {
+      if (!clientReceiptData.receiptNo.trim()) {
+        showNotification('Please enter a Receipt Number.');
+        return;
+      }
+    } else if (activeTemplate === 'labor_payslip') {
+      if (!laborPayslipData.voucherNo.trim()) {
+        showNotification('Please enter a Voucher Number.');
+        return;
+      }
     }
-    showNotification('Invoice preview updated successfully!');
+    showNotification('Document preview updated successfully!');
   };
 
   const handleDownloadPDF = () => {
-    const currentInvoiceNo =
-      activeTemplate === 'valuation'
-        ? valuationData.invoiceNo
-        : constructionData.invoiceNo;
+    let currentDocNo = valuationData.invoiceNo;
+    if (activeTemplate === 'construction') {
+      currentDocNo = constructionData.invoiceNo;
+    } else if (activeTemplate === 'client_receipt') {
+      currentDocNo = clientReceiptData.receiptNo;
+    } else if (activeTemplate === 'labor_payslip') {
+      currentDocNo = laborPayslipData.voucherNo;
+    }
 
     downloadInvoicePDF(
-      currentInvoiceNo,
+      currentDocNo,
       () => setIsGeneratingPDF(true),
       () => {
         setIsGeneratingPDF(false);
         markPendingIncrement(activeTemplate);
         showNotification(
-          `Invoice downloaded! Serial count will auto-advance on next refresh.`
+          `Document downloaded! Serial count will auto-advance on next refresh.`
         );
       }
     );
@@ -112,6 +157,21 @@ export const App: React.FC = () => {
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.1, 1.5));
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.1, 0.4));
   const handleResetZoom = () => setZoomLevel(0.85);
+
+  const getTemplateDisplayName = (tmpl: ActiveTemplate) => {
+    switch (tmpl) {
+      case 'valuation':
+        return 'Bank Valuation';
+      case 'construction':
+        return 'Construction GST';
+      case 'client_receipt':
+        return 'Client Payment Slip';
+      case 'labor_payslip':
+        return 'Daily Labor Wage Slip';
+      default:
+        return 'Invoice';
+    }
+  };
 
   if (!isAuthenticated) {
     return <AccessGate onAuthenticate={handleAuthenticate} />;
@@ -133,7 +193,7 @@ export const App: React.FC = () => {
         onTemplateChange={(tmpl) => {
           setActiveTemplate(tmpl);
           localStorage.setItem('invoice_active_template', tmpl);
-          showNotification(`Switched to ${tmpl === 'valuation' ? 'Bank Valuation' : 'Construction GST'} Invoice Template`);
+          showNotification(`Switched to ${getTemplateDisplayName(tmpl)} Template`);
         }}
         onDownloadPDF={handleDownloadPDF}
         onReset={handleReset}
@@ -178,16 +238,31 @@ export const App: React.FC = () => {
             activeTab === 'form' ? 'block' : 'hidden lg:block'
           }`}
         >
-          {activeTemplate === 'valuation' ? (
+          {activeTemplate === 'valuation' && (
             <InvoiceForm
               data={valuationData}
               onChange={setValuationData}
               onReset={handleReset}
             />
-          ) : (
+          )}
+          {activeTemplate === 'construction' && (
             <ConstructionInvoiceForm
               data={constructionData}
               onChange={setConstructionData}
+              onReset={handleReset}
+            />
+          )}
+          {activeTemplate === 'client_receipt' && (
+            <ClientReceiptForm
+              data={clientReceiptData}
+              onChange={setClientReceiptData}
+              onReset={handleReset}
+            />
+          )}
+          {activeTemplate === 'labor_payslip' && (
+            <LaborPayslipForm
+              data={laborPayslipData}
+              onChange={setLaborPayslipData}
               onReset={handleReset}
             />
           )}
@@ -210,10 +285,17 @@ export const App: React.FC = () => {
               }}
               className="my-2"
             >
-              {activeTemplate === 'valuation' ? (
+              {activeTemplate === 'valuation' && (
                 <InvoiceTemplate data={valuationData} />
-              ) : (
+              )}
+              {activeTemplate === 'construction' && (
                 <ConstructionInvoiceTemplate data={constructionData} />
+              )}
+              {activeTemplate === 'client_receipt' && (
+                <ClientReceiptTemplate data={clientReceiptData} />
+              )}
+              {activeTemplate === 'labor_payslip' && (
+                <LaborPayslipTemplate data={laborPayslipData} />
               )}
             </div>
           </div>

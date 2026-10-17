@@ -1,6 +1,6 @@
 import React from 'react';
 import type { ActiveTemplate } from '../types/invoice';
-import { Download, RotateCcw, CheckCircle2, ZoomIn, ZoomOut, Maximize2, Layers, Lock } from 'lucide-react';
+import { Download, RotateCcw, CheckCircle2, ZoomIn, ZoomOut, Maximize2, Layers, Lock, Receipt, Users } from 'lucide-react';
 
 interface ToolbarProps {
   activeTemplate: ActiveTemplate;
@@ -51,7 +51,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </div>
 
         {/* Template Selector Pills */}
-        <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1 text-xs">
+        <div className="flex flex-wrap items-center bg-slate-900 border border-slate-800 rounded-xl p-1 text-xs gap-1">
           <button
             onClick={() => onTemplateChange('valuation')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
@@ -61,7 +61,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            Bank Valuation (Invoice11)
+            Bank Valuation
           </button>
           <button
             onClick={() => onTemplateChange('construction')}
@@ -72,7 +72,31 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            Construction GST (Invoice-1)
+            Construction GST
+          </button>
+          <button
+            onClick={() => onTemplateChange('client_receipt')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              activeTemplate === 'client_receipt'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+            title="Payment slip / receipt when client pays money"
+          >
+            <Receipt className="w-3.5 h-3.5" />
+            Client Pay Slip
+          </button>
+          <button
+            onClick={() => onTemplateChange('labor_payslip')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              activeTemplate === 'labor_payslip'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800'
+            }`}
+            title="Pay slip / voucher when paying daily laborers"
+          >
+            <Users className="w-3.5 h-3.5" />
+            Daily Labor Slip
           </button>
         </div>
       </div>

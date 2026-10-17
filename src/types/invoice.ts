@@ -104,4 +104,86 @@ export interface ConstructionInvoiceData {
   tdsRate: number | string; // e.g. 2 or 0 or custom %
 }
 
-export type ActiveTemplate = 'valuation' | 'construction';
+// -------------------------------------------------------------
+// Client Payment Receipt / Slip (Money received from client)
+// -------------------------------------------------------------
+export type PaymentMode = 'Cash' | 'Cheque' | 'Bank Transfer (NEFT/RTGS)' | 'UPI' | 'Other';
+
+export interface ClientReceiptData {
+  receiptNo: string;
+  receiptDate: string;
+  referenceNo: string; // Ref Invoice No / Agreement No
+  headerTitle: string; // e.g. 'CLIENT PAYMENT RECEIPT'
+  client: {
+    name: string;
+    companyName: string;
+    phone: string;
+    address: string;
+    gstin?: string;
+  };
+  payment: {
+    mode: PaymentMode;
+    amount: number | string;
+    transactionRef: string; // Cheque No / UTR / Txn ID
+    transactionDate: string;
+    bankName: string;
+    paymentTowards: string; // Purpose
+    totalBillAmount?: number | string; // Optional total project amount
+    balanceRemaining?: number | string; // Optional pending balance
+  };
+  company: {
+    name: string;
+    tagline: string;
+    address: string;
+    gstin: string;
+    pan: string;
+    authorizedSignatory: string;
+  };
+  notes?: string;
+}
+
+// -------------------------------------------------------------
+// Daily Labor Wage Payslip (Money paid to daily labors / workers)
+// -------------------------------------------------------------
+export type LaborTrade =
+  | 'Mason (మేస్త్రి)'
+  | 'Male Helper (పురుష కూలీ)'
+  | 'Female Helper (మహిళా కూలీ)'
+  | 'Carpenter (వడ్రంగి)'
+  | 'Bar Bender (ఐరన్ వర్కర్)'
+  | 'Painter (పెయింటర్)'
+  | 'Electrician (ఎలక్ట్రీషియన్)'
+  | 'Plumber (ప్లంబర్)'
+  | 'General Labor (సాధారణ కూలీ)';
+
+export interface LaborPayslipData {
+  voucherNo: string;
+  paymentDate: string;
+  wagePeriod: string; // e.g. "Weekly / Daily: 11-10-2026 to 17-10-2026"
+  siteLocation: string; // e.g. "Peddapalem School Site, Srikakulam"
+  worker: {
+    name: string;
+    workerId: string;
+    trade: string;
+    phone?: string;
+    aadhaarLast4?: string;
+  };
+  wages: {
+    dailyRate: number | string;
+    daysWorked: number | string;
+    overtimeHours: number | string;
+    overtimeRatePerHour: number | string;
+    advanceDeduction: number | string;
+    otherAllowance: number | string;
+    paymentMode: 'Cash' | 'Bank / UPI Transfer';
+    transactionRef?: string;
+  };
+  supervisor: {
+    companyName: string;
+    supervisorName: string;
+    siteIncharge: string;
+  };
+  remarks?: string;
+}
+
+export type ActiveTemplate = 'valuation' | 'construction' | 'client_receipt' | 'labor_payslip';

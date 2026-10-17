@@ -3,11 +3,15 @@ import type { ActiveTemplate } from '../types/invoice';
 const SERIAL_STORAGE_KEYS: Record<ActiveTemplate, string> = {
   valuation: 'valuation_serial_no',
   construction: 'construction_serial_no',
+  client_receipt: 'client_receipt_serial_no',
+  labor_payslip: 'labor_payslip_serial_no',
 };
 
 const PENDING_INCREMENT_KEYS: Record<ActiveTemplate, string> = {
   valuation: 'pending_increment_valuation',
   construction: 'pending_increment_construction',
+  client_receipt: 'pending_increment_client_receipt',
+  labor_payslip: 'pending_increment_labor_payslip',
 };
 
 /**
