@@ -7,35 +7,27 @@ interface LaborPayslipTemplateProps {
 }
 
 export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data }) => {
-  const dailyRate = typeof data.wages.dailyRate === 'number'
-    ? data.wages.dailyRate
-    : parseFloat(String(data.wages.dailyRate).replace(/,/g, '')) || 0;
+  const laborItems = data.laborItems || [];
 
-  const daysWorked = typeof data.wages.daysWorked === 'number'
-    ? data.wages.daysWorked
-    : parseFloat(String(data.wages.daysWorked).replace(/,/g, '')) || 0;
+  const totalLaborsCount = laborItems.reduce((acc, item) => {
+    const count = typeof item.numberOfLabors === 'number'
+      ? item.numberOfLabors
+      : parseFloat(String(item.numberOfLabors || 0).replace(/[^0-9.]/g, '')) || 0;
+    return acc + count;
+  }, 0);
 
-  const otHours = typeof data.wages.overtimeHours === 'number'
-    ? data.wages.overtimeHours
-    : parseFloat(String(data.wages.overtimeHours).replace(/,/g, '')) || 0;
+  const totalGrossAmount = laborItems.reduce((acc, item) => {
+    const amt = typeof item.amount === 'number'
+      ? item.amount
+      : parseFloat(String(item.amount || 0).replace(/[^0-9.]/g, '')) || 0;
+    return acc + amt;
+  }, 0);
 
-  const otRate = typeof data.wages.overtimeRatePerHour === 'number'
-    ? data.wages.overtimeRatePerHour
-    : parseFloat(String(data.wages.overtimeRatePerHour).replace(/,/g, '')) || 0;
+  const advance = typeof data.advanceDeduction === 'number'
+    ? data.advanceDeduction
+    : parseFloat(String(data.advanceDeduction || 0).replace(/[^0-9.]/g, '')) || 0;
 
-  const advance = typeof data.wages.advanceDeduction === 'number'
-    ? data.wages.advanceDeduction
-    : parseFloat(String(data.wages.advanceDeduction).replace(/,/g, '')) || 0;
-
-  const allowance = typeof data.wages.otherAllowance === 'number'
-    ? data.wages.otherAllowance
-    : parseFloat(String(data.wages.otherAllowance).replace(/,/g, '')) || 0;
-
-  const basicWages = dailyRate * daysWorked;
-  const otAmount = otHours * otRate;
-  const grossWages = basicWages + otAmount + allowance;
-  const netWagesPaid = Math.max(0, grossWages - advance);
-
+  const netWagesPaid = Math.max(0, totalGrossAmount - advance);
   const amountInWords = numberToIndianWords(netWagesPaid);
 
   return (
@@ -124,7 +116,7 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
               >
                 {data.supervisor.companyName || 'SATYA SAI CONSTRUCTIONS'}
               </h1>
-              <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#333333' }}>
+              <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#222222' }}>
                 Civil Engineering, Builders & Commercial Contractors
               </div>
               <div style={{ fontSize: '11px', color: '#444444' }}>
@@ -133,9 +125,9 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
             </div>
           </div>
 
-          <div style={{ textAlign: 'right', fontSize: '11.5px', lineHeight: 1.3 }}>
-            <div style={{ fontWeight: 'bold', color: '#047857' }}>LABOR WAGE DISBURSEMENT</div>
-            <div><span style={{ fontWeight: 'bold' }}>Voucher No:</span> <span style={{ color: '#b91c1c', fontWeight: 'bold' }}>{data.voucherNo}</span></div>
+          <div style={{ textAlign: 'right', fontSize: '11.5px', lineHeight: 1.35 }}>
+            <div style={{ fontWeight: 'bold', color: '#000000', letterSpacing: '0.03em' }}>LABOR WAGE DISBURSEMENT</div>
+            <div><span style={{ fontWeight: 'bold' }}>Voucher No:</span> <span style={{ color: '#000000', fontWeight: 'bold' }}>{data.voucherNo}</span></div>
             <div><span style={{ fontWeight: 'bold' }}>Date:</span> {data.paymentDate}</div>
           </div>
         </div>
@@ -155,12 +147,12 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
           >
             DAILY LABOR WAGE SLIP / PAYMENT VOUCHER
           </h2>
-          <div style={{ fontSize: '11px', color: '#555555', marginTop: '2px' }}>
+          <div style={{ fontSize: '11px', color: '#444444', marginTop: '2px' }}>
             (దినసరి కూలీ చెల్లింపు పత్రం / వర్కర్ పే స్లిప్)
           </div>
         </div>
 
-        {/* Worker & Location Card */}
+        {/* Worker & Location Card (Worker ID Removed) */}
         <div
           style={{
             border: '1px solid #000000',
@@ -168,34 +160,38 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
             padding: '8px 12px',
             marginBottom: '14px',
             fontSize: '12px',
-            lineHeight: 1.4,
+            lineHeight: 1.45,
           }}
         >
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '6px 16px' }}>
             <div>
-              <span style={{ fontWeight: 'normal', color: '#475569' }}>Worker Name (కార్మికుడి పేరు): </span>
-              <span style={{ fontWeight: 'bold', fontSize: '13px' }}>{data.worker.name}</span>
+              <span style={{ fontWeight: 'normal', color: '#444444' }}>Worker / In-Charge Name (కార్మికుడి పేరు): </span>
+              <span style={{ fontWeight: 'bold', fontSize: '13px', color: '#000000' }}>{data.worker.name}</span>
             </div>
             <div>
-              <span style={{ fontWeight: 'normal', color: '#475569' }}>Trade / Role (వృత్తి): </span>
-              <span style={{ fontWeight: 'bold', color: '#1e3a8a' }}>{data.worker.trade}</span>
+              <span style={{ fontWeight: 'normal', color: '#444444' }}>Wage Period: </span>
+              <span style={{ fontWeight: 'bold', color: '#000000' }}>{data.wagePeriod}</span>
             </div>
-            <div>
-              <span style={{ fontWeight: 'normal', color: '#475569' }}>Worker ID: </span>
-              <span style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>{data.worker.workerId || 'N/A'}</span>
-            </div>
-            <div>
-              <span style={{ fontWeight: 'normal', color: '#475569' }}>Wage Period: </span>
-              <span style={{ fontWeight: 'bold' }}>{data.wagePeriod}</span>
-            </div>
+            {data.worker.trade && (
+              <div>
+                <span style={{ fontWeight: 'normal', color: '#444444' }}>Role / Trade (వృత్తి): </span>
+                <span style={{ fontWeight: 'bold', color: '#000000' }}>{data.worker.trade}</span>
+              </div>
+            )}
+            {data.worker.phone && (
+              <div>
+                <span style={{ fontWeight: 'normal', color: '#444444' }}>Contact Phone: </span>
+                <span style={{ fontWeight: 'bold', color: '#000000' }}>{data.worker.phone}</span>
+              </div>
+            )}
             <div style={{ gridColumn: 'span 2' }}>
-              <span style={{ fontWeight: 'normal', color: '#475569' }}>Project Site: </span>
-              <span style={{ fontWeight: 'bold' }}>{data.siteLocation}</span>
+              <span style={{ fontWeight: 'normal', color: '#444444' }}>Project Site Location: </span>
+              <span style={{ fontWeight: 'bold', color: '#000000' }}>{data.siteLocation}</span>
             </div>
           </div>
         </div>
 
-        {/* Wages Breakdown Table */}
+        {/* 5-Column Wage & Labor Breakdown Table */}
         <table
           style={{
             width: '100%',
@@ -207,78 +203,82 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
         >
           <thead>
             <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '1px solid #000000', textAlign: 'center' }}>
-              <th style={{ padding: '6px 8px', borderRight: '1px solid #000000', width: '8%' }}>S.No</th>
-              <th style={{ padding: '6px 8px', borderRight: '1px solid #000000', textAlign: 'left' }}>Wage Item Particulars (వివరాలు)</th>
-              <th style={{ padding: '6px 8px', borderRight: '1px solid #000000', width: '20%' }}>Rate / Unit (₹)</th>
-              <th style={{ padding: '6px 8px', borderRight: '1px solid #000000', width: '18%' }}>Quantity / Days</th>
-              <th style={{ padding: '6px 8px', width: '22%', textAlign: 'right' }}>Amount (₹)</th>
+              <th style={{ padding: '7px 8px', borderRight: '1px solid #000000', width: '8%', color: '#000000' }}>S.No</th>
+              <th style={{ padding: '7px 10px', borderRight: '1px solid #000000', textAlign: 'left', color: '#000000' }}>
+                Labour Type (కూలీ రకం)
+              </th>
+              <th style={{ padding: '7px 8px', borderRight: '1px solid #000000', width: '22%', color: '#000000' }}>
+                Number of Labours
+              </th>
+              <th style={{ padding: '7px 8px', borderRight: '1px solid #000000', width: '20%', textAlign: 'right', color: '#000000' }}>
+                Rate / Unit (₹)
+              </th>
+              <th style={{ padding: '7px 10px', width: '24%', textAlign: 'right', color: '#000000' }}>
+                Amount (₹)
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-              <td style={{ padding: '6px 8px', textAlign: 'center', borderRight: '1px solid #000000' }}>1</td>
-              <td style={{ padding: '6px 8px', borderRight: '1px solid #000000', fontWeight: 'bold' }}>
-                Daily Wage (దినసరి కూలీ)
-              </td>
-              <td style={{ padding: '6px 8px', textAlign: 'center', borderRight: '1px solid #000000' }}>
-                ₹ {dailyRate.toLocaleString('en-IN')} / day
-              </td>
-              <td style={{ padding: '6px 8px', textAlign: 'center', borderRight: '1px solid #000000' }}>
-                {daysWorked} Days
-              </td>
-              <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'bold' }}>
-                ₹ {basicWages.toLocaleString('en-IN')}/-
-              </td>
-            </tr>
+            {laborItems.map((item, index) => {
+              const count = typeof item.numberOfLabors === 'number'
+                ? item.numberOfLabors
+                : parseFloat(String(item.numberOfLabors || 0).replace(/[^0-9.]/g, '')) || 0;
+              const rate = typeof item.ratePerUnit === 'number'
+                ? item.ratePerUnit
+                : parseFloat(String(item.ratePerUnit || 0).replace(/[^0-9.]/g, '')) || 0;
+              const amt = typeof item.amount === 'number'
+                ? item.amount
+                : parseFloat(String(item.amount || 0).replace(/[^0-9.]/g, '')) || 0;
 
-            {otHours > 0 && (
-              <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                <td style={{ padding: '6px 8px', textAlign: 'center', borderRight: '1px solid #000000' }}>2</td>
-                <td style={{ padding: '6px 8px', borderRight: '1px solid #000000' }}>
-                  Overtime Allowance (ఓవర్‌టైమ్)
-                </td>
-                <td style={{ padding: '6px 8px', textAlign: 'center', borderRight: '1px solid #000000' }}>
-                  ₹ {otRate.toLocaleString('en-IN')} / hr
-                </td>
-                <td style={{ padding: '6px 8px', textAlign: 'center', borderRight: '1px solid #000000' }}>
-                  {otHours} Hours
-                </td>
-                <td style={{ padding: '6px 8px', textAlign: 'right' }}>
-                  ₹ {otAmount.toLocaleString('en-IN')}/-
-                </td>
-              </tr>
-            )}
+              return (
+                <tr
+                  key={item.id || index}
+                  style={{
+                    borderBottom: '1px solid #000000',
+                    backgroundColor: index % 2 === 1 ? '#fafafa' : '#ffffff',
+                  }}
+                >
+                  <td style={{ padding: '7px 8px', textAlign: 'center', borderRight: '1px solid #000000', color: '#000000' }}>
+                    {item.sNo || index + 1}
+                  </td>
+                  <td style={{ padding: '7px 10px', borderRight: '1px solid #000000', fontWeight: 'bold', color: '#000000' }}>
+                    {item.laborType || 'General Labor'}
+                  </td>
+                  <td style={{ padding: '7px 8px', textAlign: 'center', borderRight: '1px solid #000000', fontFamily: 'monospace', fontWeight: 'bold', color: '#000000' }}>
+                    {count} {count === 1 ? 'Worker' : 'Workers'}
+                  </td>
+                  <td style={{ padding: '7px 8px', textAlign: 'right', borderRight: '1px solid #000000', fontFamily: 'monospace', color: '#000000' }}>
+                    ₹ {rate.toLocaleString('en-IN')}
+                  </td>
+                  <td style={{ padding: '7px 10px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', color: '#000000' }}>
+                    ₹ {amt.toLocaleString('en-IN')}/-
+                  </td>
+                </tr>
+              );
+            })}
 
-            {allowance > 0 && (
-              <tr style={{ borderBottom: '1px solid #e2e8f0' }}>
-                <td style={{ padding: '6px 8px', textAlign: 'center', borderRight: '1px solid #000000' }}>3</td>
-                <td style={{ padding: '6px 8px', borderRight: '1px solid #000000' }}>
-                  Special / Site Allowance (ఇతర భత్యాలు)
-                </td>
-                <td style={{ padding: '6px 8px', textAlign: 'center', borderRight: '1px solid #000000' }}>-</td>
-                <td style={{ padding: '6px 8px', textAlign: 'center', borderRight: '1px solid #000000' }}>Lump sum</td>
-                <td style={{ padding: '6px 8px', textAlign: 'right' }}>
-                  ₹ {allowance.toLocaleString('en-IN')}/-
-                </td>
-              </tr>
-            )}
-
-            {/* Gross Total Row */}
-            <tr style={{ borderTop: '1px solid #000000', borderBottom: '1px solid #000000', backgroundColor: '#f8fafc' }}>
-              <td colSpan={4} style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'bold', borderRight: '1px solid #000000' }}>
-                Gross Wages Payable (మొత్తం వేతనం):
+            {/* Total Summary Row */}
+            <tr style={{ borderTop: '2px solid #000000', borderBottom: '1px solid #000000', backgroundColor: '#f1f5f9' }}>
+              <td colSpan={2} style={{ padding: '7px 10px', textAlign: 'right', fontWeight: 'bold', borderRight: '1px solid #000000', color: '#000000' }}>
+                Total Labour Count & Gross Amount:
               </td>
-              <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'bold' }}>
-                ₹ {grossWages.toLocaleString('en-IN')}/-
+              <td style={{ padding: '7px 8px', textAlign: 'center', fontWeight: 'bold', borderRight: '1px solid #000000', fontFamily: 'monospace', color: '#000000' }}>
+                {totalLaborsCount} Workers
+              </td>
+              <td style={{ padding: '7px 8px', textAlign: 'right', borderRight: '1px solid #000000', color: '#444444' }}>
+                Total:
+              </td>
+              <td style={{ padding: '7px 10px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', color: '#000000', fontSize: '13px' }}>
+                ₹ {totalGrossAmount.toLocaleString('en-IN')}/-
               </td>
             </tr>
 
             {advance > 0 && (
-              <tr style={{ borderBottom: '1px solid #000000', color: '#b91c1c' }}>
-                <td colSpan={4} style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'normal', borderRight: '1px solid #000000' }}>
+              <tr style={{ borderBottom: '1px solid #000000', backgroundColor: '#fafafa' }}>
+                <td colSpan={4} style={{ padding: '6px 10px', textAlign: 'right', fontWeight: 'normal', borderRight: '1px solid #000000', color: '#000000' }}>
                   Less: Advance / Prior Deduction (అడ్వాన్స్ మినహాయింపు):
                 </td>
-                <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'bold' }}>
+                <td style={{ padding: '6px 10px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', color: '#000000' }}>
                   - ₹ {advance.toLocaleString('en-IN')}/-
                 </td>
               </tr>
@@ -286,30 +286,43 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
           </tbody>
         </table>
 
-        {/* Net Wages Highlight Banner */}
+        {/* Net Wages Highlight Banner (Clean Black & Grayscale) */}
         <div
           style={{
             border: '2px solid #000000',
-            backgroundColor: '#f8fafc',
+            backgroundColor: '#ffffff',
             padding: '10px 14px',
             marginBottom: '14px',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              backgroundColor: '#f8fafc',
+              border: '1px solid #000000',
+              padding: '8px 12px',
+            }}
+          >
             <div>
-              <span style={{ fontSize: '13px', fontWeight: 'bold', textTransform: 'uppercase' }}>
-                NET WAGES PAID IN HAND (నికరంగా చెల్లించిన నగదు):
+              <span style={{ fontSize: '13px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.04em', color: '#000000' }}>
+                NET WAGES PAID IN HAND:
               </span>
-              <div style={{ fontSize: '11px', color: '#475569', marginTop: '2px' }}>
-                Payment Mode: <strong style={{ color: '#000000' }}>{data.wages.paymentMode}</strong>
-                {data.wages.transactionRef ? ` (Ref: ${data.wages.transactionRef})` : ''}
+              <span style={{ fontSize: '11px', color: '#444444', marginLeft: '6px', fontStyle: 'italic' }}>
+                (నికరంగా చెల్లించిన నగదు)
+              </span>
+              <div style={{ fontSize: '11px', color: '#333333', marginTop: '2px' }}>
+                Payment Method: <strong style={{ color: '#000000' }}>{data.paymentMode || 'Cash'}</strong>
+                {data.transactionRef ? ` (Ref: ${data.transactionRef})` : ''}
               </div>
             </div>
             <div
               style={{
                 fontSize: '22px',
                 fontWeight: 'bold',
-                color: '#047857',
+                fontFamily: "'Times New Roman', serif",
+                color: '#000000',
               }}
             >
               ₹ {netWagesPaid.toLocaleString('en-IN')}/-
@@ -319,10 +332,10 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
           <div
             style={{
               marginTop: '6px',
-              paddingTop: '6px',
-              borderTop: '1px dashed #777777',
+              padding: '6px 2px',
               fontSize: '12px',
               fontStyle: 'italic',
+              color: '#000000',
             }}
           >
             <span style={{ fontWeight: 'bold', fontStyle: 'normal' }}>Amount in words: </span>
@@ -331,10 +344,10 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
         </div>
 
         {/* Worker Declaration Note */}
-        <div style={{ fontSize: '11px', color: '#334155', fontStyle: 'italic', marginBottom: '14px', lineHeight: 1.4 }}>
-          "నేను పైన పేర్కొన్న పని దినములకు సంబంధించి పూర్తి వేతనమును నగదు/బ్యాంక్ ద్వారా అందుకున్నాను. ఎటువంటి బకాయిలు లేవు."
+        <div style={{ fontSize: '11px', color: '#333333', fontStyle: 'italic', marginBottom: '14px', lineHeight: 1.45 }}>
+          "మేము/నేను పైన పేర్కొన్న పనికి సంబంధించి పూర్తి వేతనమును నగదు/బ్యాంక్ ద్వారా అందుకున్నాము. ఎటువంటి బకాయిలు లేవు."
           <br />
-          (I hereby acknowledge receipt of my full wages for the period mentioned above without any balance due.)
+          (We/I hereby acknowledge receipt of full wages for the labor work mentioned above without any balance due.)
         </div>
       </div>
 
@@ -354,45 +367,45 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
               style={{
                 width: '120px',
                 height: '70px',
-                border: '1px dashed #475569',
+                border: '1px dashed #000000',
                 backgroundColor: '#f8fafc',
                 margin: '0 auto 6px auto',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontSize: '10px',
-                color: '#64748b',
+                color: '#444444',
                 textAlign: 'center',
                 padding: '4px',
               }}
             >
               Left Thumb Impression / Sign<br />(వేలిముద్ర / సంతకం)
             </div>
-            <div style={{ borderTop: '1px solid #000000', paddingTop: '4px', fontSize: '11.5px', fontWeight: 'bold' }}>
-              Worker's Signature / Thumb
+            <div style={{ borderTop: '1px solid #000000', paddingTop: '4px', fontSize: '11.5px', fontWeight: 'bold', color: '#000000' }}>
+              Worker / Mestri Signature
             </div>
           </div>
 
           {/* Site Incharge / Supervisor */}
           <div style={{ textAlign: 'center', width: '200px' }}>
             <div style={{ height: '70px' }} />
-            <div style={{ borderTop: '1px solid #000000', paddingTop: '4px', fontSize: '11.5px', fontWeight: 'bold' }}>
+            <div style={{ borderTop: '1px solid #000000', paddingTop: '4px', fontSize: '11.5px', fontWeight: 'bold', color: '#000000' }}>
               {data.supervisor.siteIncharge || 'Site Supervisor'}
             </div>
-            <div style={{ fontSize: '10px', color: '#555555' }}>
+            <div style={{ fontSize: '10px', color: '#444444' }}>
               Verified & Paid By
             </div>
           </div>
 
           {/* Authorized Contractor Sign */}
           <div style={{ textAlign: 'center', width: '220px' }}>
-            <div style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '55px' }}>
+            <div style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', marginBottom: '55px', color: '#000000' }}>
               For {data.supervisor.companyName}
             </div>
-            <div style={{ borderTop: '1px solid #000000', paddingTop: '4px', fontSize: '11.5px', fontWeight: 'bold' }}>
+            <div style={{ borderTop: '1px solid #000000', paddingTop: '4px', fontSize: '11.5px', fontWeight: 'bold', color: '#000000' }}>
               {data.supervisor.supervisorName || 'B. Satyanarayana'}
             </div>
-            <div style={{ fontSize: '10px', color: '#555555' }}>
+            <div style={{ fontSize: '10px', color: '#444444' }}>
               Authorised Signatory
             </div>
           </div>

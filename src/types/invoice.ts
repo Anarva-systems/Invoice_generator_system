@@ -158,28 +158,30 @@ export type LaborTrade =
   | 'Plumber (ప్లంబర్)'
   | 'General Labor (సాధారణ కూలీ)';
 
+export interface LaborItem {
+  id: string;
+  sNo: number;
+  laborType: string;
+  numberOfLabors: number | string;
+  ratePerUnit: number | string;
+  amount: number | string;
+}
+
 export interface LaborPayslipData {
   voucherNo: string;
   paymentDate: string;
   wagePeriod: string; // e.g. "Weekly / Daily: 11-10-2026 to 17-10-2026"
   siteLocation: string; // e.g. "Peddapalem School Site, Srikakulam"
   worker: {
-    name: string;
-    workerId: string;
-    trade: string;
+    name: string; // In-charge / Mestri / Worker Name
+    trade?: string;
     phone?: string;
     aadhaarLast4?: string;
   };
-  wages: {
-    dailyRate: number | string;
-    daysWorked: number | string;
-    overtimeHours: number | string;
-    overtimeRatePerHour: number | string;
-    advanceDeduction: number | string;
-    otherAllowance: number | string;
-    paymentMode: 'Cash' | 'Bank / UPI Transfer';
-    transactionRef?: string;
-  };
+  laborItems: LaborItem[];
+  advanceDeduction?: number | string;
+  paymentMode: 'Cash' | 'Bank / UPI Transfer';
+  transactionRef?: string;
   supervisor: {
     companyName: string;
     supervisorName: string;
