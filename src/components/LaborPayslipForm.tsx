@@ -303,14 +303,14 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
 
         {/* Multi-Row Table */}
         <div className="overflow-x-auto rounded-xl border border-slate-800">
-          <table className="w-full text-left text-xs border-collapse">
+          <table className="w-full min-w-[620px] text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-900/90 text-slate-300 border-b border-slate-800">
-                <th className="py-2.5 px-3 text-center w-12 font-semibold">S.No</th>
-                <th className="py-2.5 px-3 font-semibold min-w-[200px]">Labour Type (కూలీ రకం)</th>
-                <th className="py-2.5 px-3 text-center font-semibold w-36">Number of Labours</th>
-                <th className="py-2.5 px-3 text-right font-semibold w-36">Rate / Unit (₹)</th>
-                <th className="py-2.5 px-3 text-right font-semibold w-40">Amount (₹)</th>
+                <th className="py-2.5 px-3 text-center w-14 font-semibold">S.No</th>
+                <th className="py-2.5 px-3 font-semibold min-w-[180px]">Labour Type (కూలీ రకం)</th>
+                <th className="py-2.5 px-3 text-center font-semibold w-28">No. of Labours</th>
+                <th className="py-2.5 px-3 text-right font-semibold w-32">Rate / Unit (₹)</th>
+                <th className="py-2.5 px-3 text-right font-semibold w-36">Amount (₹)</th>
                 <th className="py-2.5 px-3 text-center w-12 font-semibold">Action</th>
               </tr>
             </thead>
@@ -318,7 +318,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
               {laborItems.map((item, index) => (
                 <tr key={item.id || index} className="hover:bg-slate-900/50 transition-colors">
                   {/* S.No */}
-                  <td className="py-2 px-3 text-center text-slate-400 font-mono font-medium">
+                  <td className="py-2.5 px-3 text-center text-slate-400 font-mono font-semibold">
                     {item.sNo || index + 1}
                   </td>
 
@@ -329,7 +329,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
                       value={item.laborType}
                       onChange={(e) => handleItemChange(index, 'laborType', e.target.value)}
                       placeholder="e.g. Mason (మేస్త్రి) / Helper"
-                      className="w-full px-2.5 py-1.5 bg-slate-900 border border-slate-700 rounded-md text-xs text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md text-xs text-white focus:outline-none focus:border-indigo-500"
                     />
                   </td>
 
@@ -342,38 +342,32 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
                       value={item.numberOfLabors}
                       onChange={(e) => handleItemChange(index, 'numberOfLabors', e.target.value)}
                       placeholder="1"
-                      className="w-full px-2 py-1.5 bg-slate-900 border border-slate-700 rounded-md text-xs text-center font-mono font-bold text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full px-2 py-2 bg-slate-900 border border-slate-700 rounded-md text-sm text-center font-mono font-bold text-white focus:outline-none focus:border-indigo-500"
                     />
                   </td>
 
                   {/* Rate / Unit (₹) */}
                   <td className="py-2 px-3">
-                    <div className="relative">
-                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500 text-xs">₹</span>
-                      <input
-                        type="number"
-                        min="0"
-                        step="10"
-                        value={item.ratePerUnit}
-                        onChange={(e) => handleItemChange(index, 'ratePerUnit', e.target.value)}
-                        placeholder="650"
-                        className="w-full pl-6 pr-2 py-1.5 bg-slate-900 border border-slate-700 rounded-md text-xs text-right font-mono font-bold text-white focus:outline-none focus:border-indigo-500"
-                      />
-                    </div>
+                    <input
+                      type="number"
+                      min="0"
+                      step="10"
+                      value={item.ratePerUnit}
+                      onChange={(e) => handleItemChange(index, 'ratePerUnit', e.target.value)}
+                      placeholder="650"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md text-sm text-right font-mono font-bold text-white focus:outline-none focus:border-indigo-500"
+                    />
                   </td>
 
                   {/* Amount (₹) */}
                   <td className="py-2 px-3">
-                    <div className="relative">
-                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-500 text-xs">₹</span>
-                      <input
-                        type="text"
-                        value={item.amount}
-                        onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
-                        placeholder="0"
-                        className="w-full pl-6 pr-2 py-1.5 bg-slate-900 border border-slate-700 rounded-md text-xs text-right font-mono font-bold text-emerald-400 focus:outline-none focus:border-indigo-500"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      value={item.amount}
+                      onChange={(e) => handleItemChange(index, 'amount', e.target.value)}
+                      placeholder="0"
+                      className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md text-sm text-right font-mono font-bold text-emerald-400 focus:outline-none focus:border-indigo-500"
+                    />
                   </td>
 
                   {/* Action */}

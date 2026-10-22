@@ -332,6 +332,9 @@ export const InvoiceTemplate: React.FC<InvoiceTemplateProps> = ({ data }) => {
           <div style={{ fontWeight: 'bold' }}>{data.valuer.accountNo}</div>
           <div style={{ fontWeight: 'normal' }}>{data.valuer.bankName}</div>
           <div style={{ fontWeight: 'normal' }}>{data.valuer.branchName}</div>
+          {data.valuer.address && data.valuer.address.trim() !== '' && (
+            <div style={{ fontWeight: 'normal', maxWidth: '320px', fontSize: '10px', color: '#222222' }}>{data.valuer.address}</div>
+          )}
           {data.valuer.ifsc && data.valuer.ifsc.trim() !== '' && (
             <div style={{ fontWeight: 'normal' }}>IFSC: {data.valuer.ifsc}</div>
           )}

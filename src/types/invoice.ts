@@ -40,6 +40,7 @@ export interface ValuerInfo {
   accountNo: string;
   bankName: string;
   branchName: string;
+  address?: string; // Office address
   ifsc?: string; // Optional IFSC Code
   gstNo?: string; // Optional GST Number
   other?: string; // Optional custom footer/valuer info
@@ -65,6 +66,7 @@ export interface ConstructionSupplierInfo {
   name: string;
   proprietorTitle: string;
   companyName: string;
+  address?: string;
   gstin: string;
   state: string;
   stateCode: string;

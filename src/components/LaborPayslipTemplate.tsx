@@ -119,8 +119,11 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
               <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#222222' }}>
                 Civil Engineering, Builders & Commercial Contractors
               </div>
-              <div style={{ fontSize: '11px', color: '#444444' }}>
-                Site Office: {data.siteLocation || 'Project Construction Site'}
+              <div style={{ fontSize: '10px', color: '#333333', lineHeight: 1.3 }}>
+                Upstairs: B.M.P.S, Near Diamond Park, New Colony, SRIKAKULAM - 532001
+              </div>
+              <div style={{ fontSize: '9.5px', color: '#555555' }}>
+                Mob: +91 98490 17375 | Phone: +91 8942 227475 | Email: satyasaiconstructions04@gmail.com
               </div>
             </div>
           </div>
@@ -368,19 +371,10 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
                 width: '120px',
                 height: '70px',
                 border: '1px dashed #000000',
-                backgroundColor: '#f8fafc',
+                backgroundColor: '#ffffff',
                 margin: '0 auto 6px auto',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '10px',
-                color: '#444444',
-                textAlign: 'center',
-                padding: '4px',
               }}
-            >
-              Left Thumb Impression / Sign<br />(వేలిముద్ర / సంతకం)
-            </div>
+            />
             <div style={{ borderTop: '1px solid #000000', paddingTop: '4px', fontSize: '11.5px', fontWeight: 'bold', color: '#000000' }}>
               Worker / Mestri Signature
             </div>

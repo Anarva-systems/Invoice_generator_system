@@ -106,9 +106,14 @@ export const ConstructionInvoiceTemplate: React.FC<ConstructionInvoiceTemplatePr
             <div style={{ fontWeight: 'normal' }}>From</div>
             <div style={{ fontWeight: 'bold' }}>{data.supplier.name}</div>
             <div style={{ fontWeight: 'bold' }}>{proprietorTitleText}</div>
-            <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>
+            <div style={{ fontWeight: 'bold', marginBottom: '2px' }}>
               {data.supplier.companyName}
             </div>
+            {data.supplier.address && (
+              <div style={{ fontSize: '11px', marginBottom: '3px', color: '#111111', lineHeight: 1.3 }}>
+                {data.supplier.address}
+              </div>
+            )}
             <div>GSTIN &nbsp;&nbsp;: {data.supplier.gstin}</div>
             <div>
               STATE &nbsp;: {data.supplier.state} Code: {data.supplier.stateCode}

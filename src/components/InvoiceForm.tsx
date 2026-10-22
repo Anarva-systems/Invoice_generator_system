@@ -854,6 +854,16 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
               />
             </div>
             <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1">Office / Registered Address</label>
+              <input
+                type="text"
+                value={data.valuer.address || ''}
+                onChange={(e) => handleValuerChange('address', e.target.value)}
+                className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white"
+                placeholder="e.g. Upstairs: B.M.P.S, Near Diamond Park, New Colony, Srikakulam - 532001"
+              />
+            </div>
+            <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Other Valuer Info (New / Optional)</label>
               <input
                 type="text"

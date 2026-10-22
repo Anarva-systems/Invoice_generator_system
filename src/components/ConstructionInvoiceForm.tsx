@@ -682,6 +682,16 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
                 className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white font-mono"
               />
             </div>
+            <div className="md:col-span-2">
+              <label className="block text-xs font-medium text-slate-400 mb-1">Registered / Office Address</label>
+              <input
+                type="text"
+                value={data.supplier.address || ''}
+                onChange={(e) => handleSupplierChange('address', e.target.value)}
+                className="w-full px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white"
+                placeholder="e.g. Upstairs: B.M.P.S, Near Diamond Park, New Colony, Srikakulam - 532001"
+              />
+            </div>
           </div>
         )}
       </div>
