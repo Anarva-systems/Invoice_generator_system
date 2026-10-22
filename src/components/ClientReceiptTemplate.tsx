@@ -11,13 +11,21 @@ export const ClientReceiptTemplate: React.FC<ClientReceiptTemplateProps> = ({ da
     ? data.payment.amount
     : parseFloat(String(data.payment.amount).replace(/,/g, '')) || 0;
 
+  const pastAmountNum = typeof data.payment.pastAmountReceived === 'number'
+    ? data.payment.pastAmountReceived
+    : parseFloat(String(data.payment.pastAmountReceived || 0).replace(/,/g, '')) || 0;
+
   const totalBillNum = typeof data.payment.totalBillAmount === 'number'
     ? data.payment.totalBillAmount
     : parseFloat(String(data.payment.totalBillAmount || 0).replace(/,/g, '')) || 0;
 
-  const balanceNum = typeof data.payment.balanceRemaining === 'number'
-    ? data.payment.balanceRemaining
-    : parseFloat(String(data.payment.balanceRemaining || 0).replace(/,/g, '')) || 0;
+  const totalReceivedNum = pastAmountNum + numericAmount;
+
+  const balanceNum = totalBillNum > 0
+    ? (totalBillNum > totalReceivedNum ? totalBillNum - totalReceivedNum : 0)
+    : (typeof data.payment.balanceRemaining === 'number'
+        ? data.payment.balanceRemaining
+        : parseFloat(String(data.payment.balanceRemaining || 0).replace(/,/g, '')) || 0);
 
   const amountInWords = numberToIndianWords(numericAmount);
 
@@ -213,27 +221,37 @@ export const ClientReceiptTemplate: React.FC<ClientReceiptTemplateProps> = ({ da
         >
           <tbody>
             <tr style={{ borderBottom: '1px solid #000000' }}>
-              <td style={{ width: '30%', padding: '7px 10px', fontWeight: 'bold', backgroundColor: '#f9fafb', borderRight: '1px solid #000000' }}>
+              <td style={{ width: '32%', padding: '6px 10px', fontWeight: 'bold', backgroundColor: '#f9fafb', borderRight: '1px solid #000000' }}>
                 Payment Purpose / Towards
               </td>
-              <td style={{ padding: '7px 10px', fontWeight: 'normal' }}>
+              <td style={{ padding: '6px 10px', fontWeight: 'normal' }}>
                 {data.payment.paymentTowards || 'Payment towards Construction & Civil Works'}
               </td>
             </tr>
+            {data.payment.otherTagged && (
+              <tr style={{ borderBottom: '1px solid #000000' }}>
+                <td style={{ padding: '6px 10px', fontWeight: 'bold', backgroundColor: '#f9fafb', borderRight: '1px solid #000000' }}>
+                  Stage / Milestone / Other Tag
+                </td>
+                <td style={{ padding: '6px 10px', fontWeight: 'bold', color: '#1e3a8a' }}>
+                  {data.payment.otherTagged}
+                </td>
+              </tr>
+            )}
             <tr style={{ borderBottom: '1px solid #000000' }}>
-              <td style={{ padding: '7px 10px', fontWeight: 'bold', backgroundColor: '#f9fafb', borderRight: '1px solid #000000' }}>
+              <td style={{ padding: '6px 10px', fontWeight: 'bold', backgroundColor: '#f9fafb', borderRight: '1px solid #000000' }}>
                 Payment Mode
               </td>
-              <td style={{ padding: '7px 10px', fontWeight: 'bold', color: '#1e3a8a' }}>
+              <td style={{ padding: '6px 10px', fontWeight: 'bold', color: '#1e3a8a' }}>
                 {data.payment.mode}
               </td>
             </tr>
             {data.payment.transactionRef && (
               <tr style={{ borderBottom: '1px solid #000000' }}>
-                <td style={{ padding: '7px 10px', fontWeight: 'bold', backgroundColor: '#f9fafb', borderRight: '1px solid #000000' }}>
+                <td style={{ padding: '6px 10px', fontWeight: 'bold', backgroundColor: '#f9fafb', borderRight: '1px solid #000000' }}>
                   Cheque / Txn / UTR Ref.
                 </td>
-                <td style={{ padding: '7px 10px', fontFamily: 'monospace', fontWeight: 'bold' }}>
+                <td style={{ padding: '6px 10px', fontFamily: 'monospace', fontWeight: 'bold' }}>
                   {data.payment.transactionRef}
                   {data.payment.transactionDate ? ` (Dated: ${data.payment.transactionDate})` : ''}
                 </td>
@@ -241,10 +259,10 @@ export const ClientReceiptTemplate: React.FC<ClientReceiptTemplateProps> = ({ da
             )}
             {data.payment.bankName && (
               <tr style={{ borderBottom: '1px solid #000000' }}>
-                <td style={{ padding: '7px 10px', fontWeight: 'bold', backgroundColor: '#f9fafb', borderRight: '1px solid #000000' }}>
+                <td style={{ padding: '6px 10px', fontWeight: 'bold', backgroundColor: '#f9fafb', borderRight: '1px solid #000000' }}>
                   Drawn On Bank / Branch
                 </td>
-                <td style={{ padding: '7px 10px' }}>
+                <td style={{ padding: '6px 10px' }}>
                   {data.payment.bankName}
                 </td>
               </tr>
@@ -252,72 +270,126 @@ export const ClientReceiptTemplate: React.FC<ClientReceiptTemplateProps> = ({ da
           </tbody>
         </table>
 
-        {/* High-Impact Amount Highlight Box */}
+        {/* High-Impact Amount Received & Complete History Ledger Box */}
         <div
           style={{
             border: '2px solid #000000',
-            backgroundColor: '#f8fafc',
-            padding: '12px 16px',
+            backgroundColor: '#ffffff',
+            padding: '12px 14px',
             marginBottom: '14px',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '14px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Amount Received:
-            </span>
+          {/* Main Present Voucher Amount Header */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              backgroundColor: '#f0fdf4',
+              border: '1px solid #86efac',
+              padding: '8px 12px',
+              borderRadius: '4px',
+            }}
+          >
+            <div>
+              <span style={{ fontSize: '13px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.04em', color: '#166534' }}>
+                Current Amount Received:
+              </span>
+              <span style={{ fontSize: '11px', color: '#15803d', marginLeft: '6px', fontStyle: 'italic' }}>
+                (ఈ రశీదు ద్వారా అందిన మొత్తం)
+              </span>
+            </div>
             <span
               style={{
                 fontSize: '22px',
                 fontWeight: 'bold',
                 fontFamily: "'Times New Roman', serif",
-                color: '#047857',
+                color: '#15803d',
               }}
             >
               ₹ {numericAmount.toLocaleString('en-IN')}/-
             </span>
           </div>
 
+          {/* Amount in words */}
           <div
             style={{
               marginTop: '6px',
-              paddingTop: '6px',
-              borderTop: '1px dashed #777777',
+              padding: '6px 2px',
               fontSize: '12px',
               fontStyle: 'italic',
+              color: '#1e293b',
             }}
           >
             <span style={{ fontWeight: 'bold', fontStyle: 'normal' }}>Amount in words: </span>
             {amountInWords}
           </div>
 
-          {(totalBillNum > 0 || balanceNum > 0) && (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginTop: '8px',
-                paddingTop: '6px',
-                borderTop: '1px solid #e2e8f0',
-                fontSize: '11.5px',
-                color: '#334155',
-              }}
-            >
+          {/* Detailed Ledger Breakdown Table (History, Present, Cumulative, Balance) */}
+          <table
+            style={{
+              width: '100%',
+              marginTop: '8px',
+              borderCollapse: 'collapse',
+              border: '1px solid #000000',
+              fontSize: '11.5px',
+            }}
+          >
+            <thead>
+              <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '1px solid #000000' }}>
+                <th style={{ padding: '5px 8px', textAlign: 'left', fontWeight: 'bold', color: '#0f172a', borderRight: '1px solid #000000' }}>
+                  Payment Accounting Breakdown (చెల్లింపుల లెక్కల వివరాలు)
+                </th>
+                <th style={{ padding: '5px 8px', textAlign: 'right', fontWeight: 'bold', color: '#0f172a', width: '35%' }}>
+                  Amount in INR (₹)
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {totalBillNum > 0 && (
-                <div>
-                  <span style={{ fontWeight: 'normal' }}>Total Bill Value: </span>
-                  <span style={{ fontWeight: 'bold' }}>₹ {totalBillNum.toLocaleString('en-IN')}</span>
-                </div>
+                <tr style={{ borderBottom: '1px solid #000000' }}>
+                  <td style={{ padding: '5px 8px', color: '#334155', borderRight: '1px solid #000000' }}>
+                    1. Total Project / Contract Value (మొత్తం ఒప్పందం విలువ):
+                  </td>
+                  <td style={{ padding: '5px 8px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace' }}>
+                    ₹ {totalBillNum.toLocaleString('en-IN')}
+                  </td>
+                </tr>
               )}
-              {balanceNum > 0 && (
-                <div>
-                  <span style={{ fontWeight: 'normal' }}>Balance Outstanding: </span>
-                  <span style={{ fontWeight: 'bold', color: '#b91c1c' }}>
-                    ₹ {balanceNum.toLocaleString('en-IN')}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
+              <tr style={{ borderBottom: '1px solid #000000', backgroundColor: '#f8fafc' }}>
+                <td style={{ padding: '5px 8px', color: '#1e40af', borderRight: '1px solid #000000' }}>
+                  2. Past Payments Received - History (గతంలో అందిన మొత్తం):
+                </td>
+                <td style={{ padding: '5px 8px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', color: '#1e40af' }}>
+                  ₹ {pastAmountNum.toLocaleString('en-IN')}
+                </td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #000000', backgroundColor: '#f0fdf4' }}>
+                <td style={{ padding: '5px 8px', color: '#166534', fontWeight: 'bold', borderRight: '1px solid #000000' }}>
+                  3. Present Payment Received - Now (ప్రస్తుతం ఈ రశీదులో అందినది):
+                </td>
+                <td style={{ padding: '5px 8px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', color: '#15803d' }}>
+                  ₹ {numericAmount.toLocaleString('en-IN')}
+                </td>
+              </tr>
+              <tr style={{ borderBottom: '1px solid #000000', backgroundColor: '#eff6ff' }}>
+                <td style={{ padding: '5px 8px', color: '#0f172a', fontWeight: 'bold', borderRight: '1px solid #000000' }}>
+                  4. Total Cumulative Received to Date (మొత్తం ఇప్పటివరకు అందినది - [2 + 3]):
+                </td>
+                <td style={{ padding: '5px 8px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', color: '#0f172a' }}>
+                  ₹ {totalReceivedNum.toLocaleString('en-IN')}
+                </td>
+              </tr>
+              <tr style={{ backgroundColor: '#fef2f2' }}>
+                <td style={{ padding: '6px 8px', color: '#991b1b', fontWeight: 'bold', borderRight: '1px solid #000000' }}>
+                  5. Net Balance Amount to Pay (ఇంకా చెల్లించవలసిన మిగులు బాకీ):
+                </td>
+                <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', fontSize: '13px', color: '#b91c1c' }}>
+                  ₹ {balanceNum.toLocaleString('en-IN')}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
         {/* Notes */}

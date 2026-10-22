@@ -45,36 +45,70 @@ export const ClientReceiptForm: React.FC<ClientReceiptFormProps> = ({
     ? data.payment.amount
     : parseFloat(String(data.payment.amount).replace(/,/g, '')) || 0;
 
+  const pastAmountNum = typeof data.payment.pastAmountReceived === 'number'
+    ? data.payment.pastAmountReceived
+    : parseFloat(String(data.payment.pastAmountReceived || 0).replace(/,/g, '')) || 0;
+
   const totalBillNum = typeof data.payment.totalBillAmount === 'number'
     ? data.payment.totalBillAmount
     : parseFloat(String(data.payment.totalBillAmount || 0).replace(/,/g, '')) || 0;
 
+  const totalReceivedNum = pastAmountNum + numericAmount;
+  const computedBalance = totalBillNum > totalReceivedNum ? totalBillNum - totalReceivedNum : 0;
+
+  const recalculateBalance = (
+    presentVal: number | string,
+    pastVal: number | string | undefined,
+    billVal: number | string | undefined
+  ) => {
+    const pNum = parseFloat(String(presentVal || 0).replace(/[^0-9.]/g, '')) || 0;
+    const pastNum = parseFloat(String(pastVal || 0).replace(/[^0-9.]/g, '')) || 0;
+    const bNum = parseFloat(String(billVal || 0).replace(/[^0-9.]/g, '')) || 0;
+    const totalRec = pastNum + pNum;
+    if (bNum > 0) {
+      return bNum > totalRec ? bNum - totalRec : 0;
+    }
+    return '';
+  };
+
   const handleAmountChange = (rawVal: string) => {
     const clean = rawVal.replace(/[^0-9.]/g, '');
-    const num = parseFloat(clean) || 0;
-    const balance = totalBillNum > num ? totalBillNum - num : 0;
+    const newBal = recalculateBalance(clean, data.payment.pastAmountReceived, data.payment.totalBillAmount);
 
     onChange({
       ...data,
       payment: {
         ...data.payment,
         amount: clean,
-        balanceRemaining: balance > 0 ? balance : '',
+        balanceRemaining: newBal !== '' ? newBal : data.payment.balanceRemaining,
+      },
+    });
+  };
+
+  const handlePastAmountChange = (rawVal: string) => {
+    const clean = rawVal.replace(/[^0-9.]/g, '');
+    const newBal = recalculateBalance(data.payment.amount, clean, data.payment.totalBillAmount);
+
+    onChange({
+      ...data,
+      payment: {
+        ...data.payment,
+        pastAmountReceived: clean,
+        balanceRemaining: newBal !== '' ? newBal : data.payment.balanceRemaining,
       },
     });
   };
 
   const handleTotalBillChange = (rawVal: string) => {
     const clean = rawVal.replace(/[^0-9.]/g, '');
-    const bill = parseFloat(clean) || 0;
-    const balance = bill > numericAmount ? bill - numericAmount : 0;
+    const newBal = recalculateBalance(data.payment.amount, data.payment.pastAmountReceived, clean);
 
     onChange({
       ...data,
       payment: {
         ...data.payment,
         totalBillAmount: clean,
-        balanceRemaining: balance > 0 ? balance : '',
+        balanceRemaining: newBal !== '' ? newBal : '',
       },
     });
   };
@@ -281,12 +315,13 @@ export const ClientReceiptForm: React.FC<ClientReceiptFormProps> = ({
 
         {/* Amount Input with Auto Words Preview */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="md:col-span-2 bg-slate-900/90 p-3.5 rounded-xl border border-indigo-950/80 space-y-2">
+          {/* Current Amount Received */}
+          <div className="bg-slate-900/90 p-3.5 rounded-xl border border-indigo-950/80 space-y-2">
             <div className="flex justify-between items-center">
               <label className="block text-xs font-bold text-white uppercase tracking-wider">
-                Amount Received (వచ్చిన నగదు) <span className="text-red-400">*</span>
+                Current Amount Received (ప్రస్తుతం వచ్చిన నగదు) <span className="text-red-400">*</span>
               </label>
-              <span className="text-xs text-indigo-400 font-mono">INR (₹)</span>
+              <span className="text-xs text-emerald-400 font-mono">Present Payment</span>
             </div>
             <div className="relative">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-lg font-bold text-slate-400">
@@ -305,6 +340,47 @@ export const ClientReceiptForm: React.FC<ClientReceiptFormProps> = ({
               <span className="font-semibold text-slate-300">Words: </span>
               {numberToIndianWords(numericAmount)}
             </div>
+          </div>
+
+          {/* Past History Amount Received */}
+          <div className="bg-slate-900/90 p-3.5 rounded-xl border border-blue-950/80 space-y-2">
+            <div className="flex justify-between items-center">
+              <label className="block text-xs font-bold text-white uppercase tracking-wider">
+                Past Amount Received (గతంలో అందిన మొత్తం)
+              </label>
+              <span className="text-xs text-blue-400 font-mono">Past History</span>
+            </div>
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-lg font-bold text-slate-400">
+                ₹
+              </span>
+              <input
+                type="text"
+                value={data.payment.pastAmountReceived ?? ''}
+                onChange={(e) => handlePastAmountChange(e.target.value)}
+                className="w-full pl-8 pr-4 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-xl font-bold font-mono text-blue-400 focus:outline-none focus:border-indigo-500"
+                placeholder="100000"
+              />
+            </div>
+            <div className="text-[11px] text-slate-400 italic">
+              <span className="font-semibold text-slate-300">Words: </span>
+              {pastAmountNum > 0 ? numberToIndianWords(pastAmountNum) : 'Zero Rupees'}
+            </div>
+          </div>
+
+          {/* Other Tagged Input */}
+          <div className="md:col-span-2">
+            <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center justify-between">
+              <span>Other Tagged / Category / Milestone (ఇతర ట్యాగ్)</span>
+              <span className="text-[10px] text-indigo-400 font-normal">Optional Tag or Milestone</span>
+            </label>
+            <input
+              type="text"
+              value={data.payment.otherTagged || ''}
+              onChange={(e) => handleFieldChange('payment.otherTagged', e.target.value)}
+              className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:border-indigo-500"
+              placeholder="e.g. Milestone 2 - Foundation & Slabs / Material Advance / Phase 1"
+            />
           </div>
 
           <div>
@@ -361,7 +437,7 @@ export const ClientReceiptForm: React.FC<ClientReceiptFormProps> = ({
 
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">
-              Total Project / Bill Amount (Optional)
+              Total Project / Bill Amount (మొత్తం ప్రాజెక్ట్ విలువ)
             </label>
             <input
               type="text"
@@ -374,15 +450,61 @@ export const ClientReceiptForm: React.FC<ClientReceiptFormProps> = ({
 
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">
-              Balance Outstanding (Auto-Calculated)
+              Balance Outstanding to Pay (ఇంకా ఇవ్వవలసిన బాకీ - Auto)
             </label>
             <input
               type="text"
               value={data.payment.balanceRemaining || ''}
               onChange={(e) => handleFieldChange('payment.balanceRemaining', e.target.value)}
               className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-amber-400 font-mono font-bold focus:outline-none focus:border-indigo-500"
-              placeholder="e.g. 350000"
+              placeholder="e.g. 250000"
             />
+          </div>
+
+          {/* Live Calculation Ledger Card */}
+          <div className="md:col-span-2 bg-gradient-to-br from-slate-900 to-slate-950 p-4 rounded-xl border border-slate-800 shadow-inner space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <Receipt className="w-3.5 h-3.5 text-indigo-400" />
+                Ledger Summary & Balance Calculation
+              </span>
+              <span className="text-[11px] text-slate-400">All figures in INR (₹)</span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+              {totalBillNum > 0 && (
+                <div className="bg-slate-950/70 p-2.5 rounded-lg border border-slate-800/80">
+                  <div className="text-[10px] text-slate-400 uppercase">Total Contract</div>
+                  <div className="text-sm font-bold text-white font-mono mt-0.5">
+                    ₹{totalBillNum.toLocaleString('en-IN')}
+                  </div>
+                </div>
+              )}
+              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-blue-900/40">
+                <div className="text-[10px] text-blue-400 uppercase">Past Received</div>
+                <div className="text-sm font-bold text-blue-400 font-mono mt-0.5">
+                  ₹{pastAmountNum.toLocaleString('en-IN')}
+                </div>
+              </div>
+              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-emerald-900/40">
+                <div className="text-[10px] text-emerald-400 uppercase">Present Received</div>
+                <div className="text-sm font-bold text-emerald-400 font-mono mt-0.5">
+                  ₹{numericAmount.toLocaleString('en-IN')}
+                </div>
+              </div>
+              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-indigo-900/40">
+                <div className="text-[10px] text-indigo-300 uppercase">Total Received</div>
+                <div className="text-sm font-bold text-indigo-300 font-mono mt-0.5">
+                  ₹{totalReceivedNum.toLocaleString('en-IN')}
+                </div>
+              </div>
+              <div className="bg-slate-950/70 p-2.5 rounded-lg border border-amber-900/50">
+                <div className="text-[10px] text-amber-400 uppercase">Balance Due</div>
+                <div className="text-sm font-bold text-amber-400 font-mono mt-0.5">
+                  ₹{(totalBillNum > 0 ? computedBalance : (parseFloat(String(data.payment.balanceRemaining || 0)) || 0)).toLocaleString('en-IN')}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

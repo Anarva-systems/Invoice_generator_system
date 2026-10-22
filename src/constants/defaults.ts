@@ -119,12 +119,14 @@ export const DEFAULT_CLIENT_RECEIPT_DATA: ClientReceiptData = {
   payment: {
     mode: 'Bank Transfer (NEFT/RTGS)',
     amount: 150000,
+    otherTagged: 'Milestone 2 - Foundation & Plinth Beam',
+    pastAmountReceived: 100000,
     transactionRef: 'UTR98374829104',
     transactionDate: '17-10-2026',
     bankName: 'State Bank of India',
     paymentTowards: 'Part Payment for Construction Mobilization & Civil Works',
     totalBillAmount: 500000,
-    balanceRemaining: 350000,
+    balanceRemaining: 250000,
   },
   company: {
     name: 'SATYA SAI CONSTRUCTIONS',

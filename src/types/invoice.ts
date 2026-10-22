@@ -124,6 +124,8 @@ export interface ClientReceiptData {
   payment: {
     mode: PaymentMode;
     amount: number | string;
+    otherTagged?: string; // Tag / Milestone / Stage / Category
+    pastAmountReceived?: number | string; // Manually entered past payment history
     transactionRef: string; // Cheque No / UTR / Txn ID
     transactionDate: string;
     bankName: string;
