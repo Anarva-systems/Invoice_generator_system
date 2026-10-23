@@ -335,11 +335,6 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
           </div>
         </div>
 
-        {/* Worker Declaration Note (Clean English Only) */}
-        <div style={{ fontSize: '8.5px', color: '#444444', fontStyle: 'italic', marginBottom: '4px', lineHeight: 1.3 }}>
-          (We/I hereby acknowledge receipt of full wages for the labor work mentioned above without any balance due.)
-        </div>
-
         {/* Signature Section */}
         <div style={{ marginTop: 'auto', paddingTop: '4px' }}>
           <div
