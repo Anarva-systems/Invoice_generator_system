@@ -336,7 +336,7 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
         </div>
 
         {/* Signature Section */}
-        <div style={{ marginTop: 'auto', paddingTop: '4px' }}>
+        <div style={{ marginTop: 'auto', paddingTop: '15px' }}>
           <div
             style={{
               display: 'flex',
