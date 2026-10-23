@@ -24,8 +24,8 @@ export const ClientReceiptTemplate: React.FC<ClientReceiptTemplateProps> = ({ da
   const balanceNum = totalBillNum > 0
     ? (totalBillNum > totalReceivedNum ? totalBillNum - totalReceivedNum : 0)
     : (typeof data.payment.balanceRemaining === 'number'
-        ? data.payment.balanceRemaining
-        : parseFloat(String(data.payment.balanceRemaining || 0).replace(/,/g, '')) || 0);
+      ? data.payment.balanceRemaining
+      : parseFloat(String(data.payment.balanceRemaining || 0).replace(/,/g, '')) || 0);
 
   const amountInWords = numberToIndianWords(numericAmount);
   const isSingle = data.exportPortion === 'single';
@@ -173,7 +173,7 @@ export const ClientReceiptTemplate: React.FC<ClientReceiptTemplateProps> = ({ da
                 {data.company.name || 'SATYA SAI CONSTRUCTIONS'}
               </h1>
               <div style={{ fontSize: '9.5px', fontWeight: 'bold', color: '#222222', lineHeight: 1.2 }}>
-                {data.company.tagline || 'Consultant Civil Engineer, Approved Valuers& Contractors and Builders'}
+                {data.company.tagline || 'Consultant Civil Engineer, Approved Valuers, Contractors and Builders'}
               </div>
               <div style={{ fontSize: '8.5px', color: '#444444', lineHeight: 1.2 }}>
                 {data.company.address}

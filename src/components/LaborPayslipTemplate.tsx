@@ -114,7 +114,7 @@ export const LaborPayslipTemplate: React.FC<LaborPayslipTemplateProps> = ({ data
                 {data.supervisor.companyName || 'SATYA SAI CONSTRUCTIONS'}
               </h1>
               <div style={{ fontSize: '9.5px', fontWeight: 'bold', color: '#222222', lineHeight: 1.2 }}>
-                Civil Engineering, Builders & Commercial Contractors
+                Consultant Civil Engineer, Approved Valuers& Contractors and Builders
               </div>
               <div style={{ fontSize: '8.5px', color: '#333333', lineHeight: 1.2 }}>
                 Upstairs: B.M.P.S, Near Diamond Park, New Colony, SRIKAKULAM - 532001
