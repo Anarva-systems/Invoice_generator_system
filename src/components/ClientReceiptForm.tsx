@@ -9,6 +9,7 @@ import {
   DollarSign,
   ChevronDown,
   ChevronUp,
+  Layers,
 } from 'lucide-react';
 import { numberToIndianWords } from '../utils/numberToWords';
 
@@ -141,6 +142,46 @@ export const ClientReceiptForm: React.FC<ClientReceiptFormProps> = ({
           <RotateCcw className="w-3.5 h-3.5" />
           Reset Form
         </button>
+      </div>
+
+      {/* Layout Format: Single Portion vs Full Dual-Copy */}
+      <div className="bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+          <div className="text-xs font-semibold text-slate-300 flex items-center gap-2">
+            <Layers className="w-4 h-4 text-indigo-400" />
+            Print Layout Format
+          </div>
+          <div className="text-xs text-slate-400 mt-0.5">
+            Choose whether to print 2-in-1 (dual copies on single A4) or a single half-page voucher.
+          </div>
+        </div>
+
+        <div className="flex bg-slate-900 border border-slate-800 rounded-lg p-0.5 text-xs">
+          <button
+            type="button"
+            onClick={() => onChange({ ...data, exportPortion: 'single' })}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-semibold transition-all ${
+              (data.exportPortion || 'full') === 'single'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            Single Portion (Half)
+          </button>
+          <button
+            type="button"
+            onClick={() => onChange({ ...data, exportPortion: 'full' })}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-semibold transition-all ${
+              (data.exportPortion || 'full') === 'full'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            Full Dual-Copy (2 in 1)
+          </button>
+        </div>
       </div>
 
       {/* 1. Receipt Meta Information */}
@@ -285,10 +326,23 @@ export const ClientReceiptForm: React.FC<ClientReceiptFormProps> = ({
 
       {/* 3. Payment Details & Amount */}
       <div className="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-4">
-        <h3 className="text-xs font-semibold text-slate-300 flex items-center gap-2 uppercase tracking-wider">
-          <DollarSign className="w-4 h-4 text-emerald-400" />
-          Payment Transaction & Amount
-        </h3>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-2 border-b border-slate-800/80">
+          <h3 className="text-xs font-semibold text-slate-300 flex items-center gap-2 uppercase tracking-wider">
+            <DollarSign className="w-4 h-4 text-emerald-400" />
+            Payment Transaction & Amount
+          </h3>
+
+          {/* Table Visibility Toggle */}
+          <label className="flex items-center gap-2 cursor-pointer text-xs">
+            <input
+              type="checkbox"
+              checked={data.showPaymentTable !== false}
+              onChange={(e) => onChange({ ...data, showPaymentTable: e.target.checked })}
+              className="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+            />
+            <span className="text-slate-300 font-medium">Show Particulars Table in Slip (Optional)</span>
+          </label>
+        </div>
 
         {/* Payment Mode Selector */}
         <div>

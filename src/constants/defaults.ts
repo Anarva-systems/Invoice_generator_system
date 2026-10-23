@@ -59,7 +59,7 @@ export const DEFAULT_INVOICE_DATA: InvoiceData = {
 };
 
 export const DEFAULT_CONSTRUCTION_INVOICE_DATA: ConstructionInvoiceData = {
-  invoiceNo: 'No.SSC2026/July/92',
+  invoiceNo: 'SSCE2026/OCT/93',
   dated: '04-07-2026',
   suppliersRef: '',
   buyersOrderNo: '',
@@ -111,6 +111,8 @@ export const DEFAULT_CLIENT_RECEIPT_DATA: ClientReceiptData = {
   receiptDate: '17-10-2026',
   referenceNo: 'SSC2026/OCT/96',
   headerTitle: 'CLIENT PAYMENT RECEIPT',
+  exportPortion: 'full',
+  showPaymentTable: true,
   client: {
     name: 'Sri Varanasi Kantha Rao',
     companyName: 'M/s. Sri Venkata Santhammani Modern Rice Mill',
@@ -132,13 +134,13 @@ export const DEFAULT_CLIENT_RECEIPT_DATA: ClientReceiptData = {
   },
   company: {
     name: 'SATYA SAI CONSTRUCTIONS',
-    tagline: 'Engineers, Approved Valuers & Commercial Contractors',
+    tagline: 'Consultant Civil Engineer, Approved Valuers& Contractors and Builders',
     address: 'Upstairs: B.M.P.S, Near Diamond Park, New Colony, Srikakulam - 532001',
     gstin: '37BSZPS7072Q1ZT',
     pan: 'BSZPS7072Q',
     authorizedSignatory: 'B. Satyanarayana',
   },
-  notes: 'Thank you for your prompt payment. Subject to realization of cheque/transfer.',
+  notes: '',
 };
 
 export const DEFAULT_LABOR_PAYSLIP_DATA: LaborPayslipData = {
@@ -146,6 +148,7 @@ export const DEFAULT_LABOR_PAYSLIP_DATA: LaborPayslipData = {
   paymentDate: '17-10-2026',
   wagePeriod: 'Daily / Weekly: 11-10-2026 to 17-10-2026',
   siteLocation: 'Divine Saviour English Medium School Site, Peddapalem, Surubujjili',
+  exportPortion: 'full',
   worker: {
     name: 'K. Appa Rao (Mason In-Charge)',
     trade: 'Mason & Civil Works',
@@ -156,7 +159,7 @@ export const DEFAULT_LABOR_PAYSLIP_DATA: LaborPayslipData = {
     {
       id: '1',
       sNo: 1,
-      laborType: 'Mason (మేస్త్రి)',
+      laborType: 'Mason',
       numberOfLabors: 2,
       ratePerUnit: 950,
       amount: 1900,
@@ -164,7 +167,7 @@ export const DEFAULT_LABOR_PAYSLIP_DATA: LaborPayslipData = {
     {
       id: '2',
       sNo: 2,
-      laborType: 'Male Helper (పురుష కూలీ)',
+      laborType: 'Male Helper',
       numberOfLabors: 4,
       ratePerUnit: 650,
       amount: 2600,
@@ -172,7 +175,7 @@ export const DEFAULT_LABOR_PAYSLIP_DATA: LaborPayslipData = {
     {
       id: '3',
       sNo: 3,
-      laborType: 'Female Helper (మహిళా కూలీ)',
+      laborType: 'Female Helper',
       numberOfLabors: 3,
       ratePerUnit: 550,
       amount: 1650,
@@ -180,7 +183,7 @@ export const DEFAULT_LABOR_PAYSLIP_DATA: LaborPayslipData = {
     {
       id: '4',
       sNo: 4,
-      laborType: 'Bar Bender (ఐరన్ వర్కర్)',
+      laborType: 'Bar Bender',
       numberOfLabors: 2,
       ratePerUnit: 900,
       amount: 1800,

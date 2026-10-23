@@ -144,21 +144,23 @@ export interface ClientReceiptData {
     authorizedSignatory: string;
   };
   notes?: string;
+  exportPortion?: 'single' | 'full';
+  showPaymentTable?: boolean;
 }
 
 // -------------------------------------------------------------
 // Daily Labor Wage Payslip (Money paid to daily labors / workers)
 // -------------------------------------------------------------
 export type LaborTrade =
-  | 'Mason (మేస్త్రి)'
-  | 'Male Helper (పురుష కూలీ)'
-  | 'Female Helper (మహిళా కూలీ)'
-  | 'Carpenter (వడ్రంగి)'
-  | 'Bar Bender (ఐరన్ వర్కర్)'
-  | 'Painter (పెయింటర్)'
-  | 'Electrician (ఎలక్ట్రీషియన్)'
-  | 'Plumber (ప్లంబర్)'
-  | 'General Labor (సాధారణ కూలీ)';
+  | 'Mason'
+  | 'Male Helper'
+  | 'Female Helper'
+  | 'Carpenter'
+  | 'Bar Bender'
+  | 'Painter'
+  | 'Electrician'
+  | 'Plumber'
+  | 'General Labor';
 
 export interface LaborItem {
   id: string;
@@ -190,6 +192,7 @@ export interface LaborPayslipData {
     siteIncharge: string;
   };
   remarks?: string;
+  exportPortion?: 'single' | 'full';
 }
 
 export type ActiveTemplate = 'valuation' | 'construction' | 'client_receipt' | 'labor_payslip';

@@ -42,7 +42,7 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
   const [showSupplierSettings, setShowSupplierSettings] = useState(false);
   const [isManualEdit, setIsManualEdit] = useState(false);
   const [serialNo, setSerialNo] = useState(() => {
-    return getAndConsumeSerial('construction', '92');
+    return getAndConsumeSerial('construction', '93');
   });
 
   useEffect(() => {
@@ -67,9 +67,8 @@ export const ConstructionInvoiceForm: React.FC<ConstructionInvoiceFormProps> = (
   useEffect(() => {
     if (!isManualEdit) {
       const year = getCurrentYear();
-      const month = getCurrentMonthUpper();
-      const monthCapitalized = month.charAt(0) + month.slice(1).toLowerCase();
-      const autoInvoiceNo = `No.SSC${year}/${monthCapitalized}/${serialNo || '92'}`;
+      const monthUpper = getCurrentMonthUpper().slice(0, 3);
+      const autoInvoiceNo = `SSCE${year}/${monthUpper}/${serialNo || '93'}`;
       const autoToday = getTodayFormatted();
 
       onChange({

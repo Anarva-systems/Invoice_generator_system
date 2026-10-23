@@ -12,6 +12,7 @@ import {
   ChevronUp,
   Plus,
   Trash2,
+  Layers,
 } from 'lucide-react';
 import { numberToIndianWords } from '../utils/numberToWords';
 
@@ -45,15 +46,15 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
   };
 
   const tradePresets: LaborTrade[] = [
-    'Mason (మేస్త్రి)',
-    'Male Helper (పురుష కూలీ)',
-    'Female Helper (మహిళా కూలీ)',
-    'Carpenter (వడ్రంగి)',
-    'Bar Bender (ఐరన్ వర్కర్)',
-    'Painter (పెయింటర్)',
-    'Electrician (ఎలక్ట్రీషియన్)',
-    'Plumber (ప్లంబర్)',
-    'General Labor (సాధారణ కూలీ)',
+    'Mason',
+    'Male Helper',
+    'Female Helper',
+    'Carpenter',
+    'Bar Bender',
+    'Painter',
+    'Electrician',
+    'Plumber',
+    'General Labor',
   ];
 
   const laborItems = data.laborItems || [];
@@ -133,7 +134,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
         <div>
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <Users className="w-5 h-5 text-indigo-400" />
-            Daily Labor Wage Slip (దినసరి కూలీ రశీదు)
+            Daily Labor Wage Slip
           </h2>
           <p className="text-xs text-slate-400 mt-1">
             Generate wage disbursement slip / voucher for daily labors and construction site workers.
@@ -146,6 +147,46 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
           <RotateCcw className="w-3.5 h-3.5" />
           Reset Form
         </button>
+      </div>
+
+      {/* Layout Format: Single Portion vs Full Dual-Copy */}
+      <div className="bg-slate-950/80 p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+          <div className="text-xs font-semibold text-slate-300 flex items-center gap-2">
+            <Layers className="w-4 h-4 text-indigo-400" />
+            Print Layout Format
+          </div>
+          <div className="text-xs text-slate-400 mt-0.5">
+            Choose whether to print 2-in-1 (dual copies on single A4) or a single half-page voucher.
+          </div>
+        </div>
+
+        <div className="flex bg-slate-900 border border-slate-800 rounded-lg p-0.5 text-xs">
+          <button
+            type="button"
+            onClick={() => onChange({ ...data, exportPortion: 'single' })}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-semibold transition-all ${
+              (data.exportPortion || 'full') === 'single'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            Single Portion (Half)
+          </button>
+          <button
+            type="button"
+            onClick={() => onChange({ ...data, exportPortion: 'full' })}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-semibold transition-all ${
+              (data.exportPortion || 'full') === 'full'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5" />
+            Full Dual-Copy (2 in 1)
+          </button>
+        </div>
       </div>
 
       {/* 1. Voucher Meta Information */}
@@ -186,7 +227,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
 
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">
-              Wage Period (వారం / రోజులు)
+              Wage Period
             </label>
             <input
               type="text"
@@ -217,13 +258,13 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
       <div className="bg-slate-950/80 p-4 rounded-xl border border-slate-800 space-y-3">
         <h3 className="text-xs font-semibold text-slate-300 flex items-center gap-2 uppercase tracking-wider">
           <UserCheck className="w-4 h-4 text-indigo-400" />
-          Worker / In-Charge Profile (కార్మికుడు / మేస్త్రి వివరాలు)
+          Worker / In-Charge Profile
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1">
-              Worker / In-Charge Name (కార్మికుడి పేరు) <span className="text-red-400">*</span>
+              Worker / In-Charge Name <span className="text-red-400">*</span>
             </label>
             <input
               type="text"
@@ -238,7 +279,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1 flex items-center gap-1.5">
               <Briefcase className="w-3.5 h-3.5 text-indigo-400" />
-              Role / Trade (వృత్తి)
+              Role / Trade
             </label>
             <input
               type="text"
@@ -270,7 +311,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
           <div>
             <h3 className="text-xs font-semibold text-slate-300 flex items-center gap-2 uppercase tracking-wider">
               <Banknote className="w-4 h-4 text-emerald-400" />
-              Wage Calculation & Labour Table (కూలీల వివరాలు)
+              Wage Calculation & Labour Table
             </h3>
             <p className="text-[11px] text-slate-400 mt-0.5">
               Enter labor types, counts, and rates. Amount can be calculated automatically or manually overridden.
@@ -296,7 +337,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
               onClick={() => handleAddItem(preset)}
               className="px-2.5 py-1 text-[11px] font-medium bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white rounded-md border border-slate-800 transition-colors"
             >
-              + {preset.split(' ')[0]}
+              + {preset}
             </button>
           ))}
         </div>
@@ -307,7 +348,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
             <thead>
               <tr className="bg-slate-900/90 text-slate-300 border-b border-slate-800">
                 <th className="py-2.5 px-3 text-center w-14 font-semibold">S.No</th>
-                <th className="py-2.5 px-3 font-semibold min-w-[180px]">Labour Type (కూలీ రకం)</th>
+                <th className="py-2.5 px-3 font-semibold min-w-[180px]">Labour Type</th>
                 <th className="py-2.5 px-3 text-center font-semibold w-28">No. of Labours</th>
                 <th className="py-2.5 px-3 text-right font-semibold w-32">Rate / Unit (₹)</th>
                 <th className="py-2.5 px-3 text-right font-semibold w-36">Amount (₹)</th>
@@ -328,7 +369,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
                       type="text"
                       value={item.laborType}
                       onChange={(e) => handleItemChange(index, 'laborType', e.target.value)}
-                      placeholder="e.g. Mason (మేస్త్రి) / Helper"
+                      placeholder="e.g. Mason / Helper"
                       className="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-md text-xs text-white focus:outline-none focus:border-indigo-500"
                     />
                   </td>
@@ -431,7 +472,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-800">
           <div>
             <label className="block text-xs font-medium text-slate-400 mb-1.5">
-              Payment Method (చెల్లింపు విధానం)
+              Payment Method
             </label>
             <div className="flex gap-2">
               <button
@@ -443,7 +484,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
                     : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
                 }`}
               >
-                Cash in Hand (నగదు)
+                Cash in Hand
               </button>
               <button
                 type="button"
@@ -480,7 +521,7 @@ export const LaborPayslipForm: React.FC<LaborPayslipFormProps> = ({
           <div className="flex justify-between items-center">
             <div>
               <div className="text-xs font-bold text-white uppercase tracking-wider">
-                Net Wages Paid (నికరంగా చెల్లించిన నగదు)
+                Net Wages Paid in Hand
               </div>
               <div className="text-[11px] text-slate-400 mt-0.5">
                 Total for {totalLaborsCount} Labours across {laborItems.length} categories {advance > 0 ? ` (after ₹${advance} advance)` : ''}
