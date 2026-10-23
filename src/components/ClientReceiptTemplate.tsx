@@ -173,7 +173,7 @@ export const ClientReceiptTemplate: React.FC<ClientReceiptTemplateProps> = ({ da
                 {data.company.name || 'SATYA SAI CONSTRUCTIONS'}
               </h1>
               <div style={{ fontSize: '9.5px', fontWeight: 'bold', color: '#222222', lineHeight: 1.2 }}>
-                {data.company.tagline || 'Consultant Civil Engineer, Approved Valuers, Contractors and Builders'}
+                {data.company.tagline || 'Consultant Engineer, Contractor, Builder and Approved Valuer'}
               </div>
               <div style={{ fontSize: '8.5px', color: '#444444', lineHeight: 1.2 }}>
                 {data.company.address}

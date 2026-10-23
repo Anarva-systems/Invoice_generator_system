@@ -277,7 +277,7 @@ export const InvoiceForm: React.FC<InvoiceFormProps> = ({ data, onChange, onRese
                   ? 'bg-slate-950/50 border-slate-800 text-red-400 font-semibold cursor-not-allowed opacity-90'
                   : 'bg-slate-950 border-slate-700 text-white focus:outline-none focus:border-indigo-500'
               }`}
-              placeholder="e.g. SSC2026/JULY/93"
+              placeholder="e.g. SSC2026/OCT/93"
               required
             />
           </div>

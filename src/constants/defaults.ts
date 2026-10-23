@@ -6,9 +6,9 @@ import type {
 } from '../types/invoice';
 
 export const DEFAULT_INVOICE_DATA: InvoiceData = {
-  invoiceNo: 'SSC2026/JULY/93',
-  invoiceDate: '24-07-2026',
-  valuationDate: '23-07-2026',
+  invoiceNo: 'SSC2026/OCT/93',
+  invoiceDate: '24-10-2026',
+  valuationDate: '23-10-2026',
   headerTitle: 'TAX INVOICE CASH/CREDIT',
   exportPortion: 'full',
   recipient: {

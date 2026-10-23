@@ -4,18 +4,18 @@
  */
 
 const MONTH_NAMES = [
-  'JANUARY',
-  'FEBRUARY',
-  'MARCH',
-  'APRIL',
+  'JAN',
+  'FEB',
+  'MAR',
+  'APR',
   'MAY',
-  'JUNE',
-  'JULY',
-  'AUGUST',
-  'SEPTEMBER',
-  'OCTOBER',
-  'NOVEMBER',
-  'DECEMBER',
+  'JUN',
+  'JUL',
+  'AUG',
+  'SEP',
+  'OCT',
+  'NOV',
+  'DEC',
 ];
 
 /**
@@ -49,7 +49,7 @@ export function getCurrentYear(): string {
 }
 
 /**
- * Returns current month in uppercase string (e.g. "JULY" or "SEPTEMBER")
+ * Returns current month in uppercase 3-letter abbreviation (e.g. "OCT" or "SEP")
  */
 export function getCurrentMonthUpper(): string {
   return MONTH_NAMES[new Date().getMonth()];
@@ -57,7 +57,7 @@ export function getCurrentMonthUpper(): string {
 
 /**
  * Generates structured Invoice Number: SSC[YEAR]/[MONTH]/[SERIAL]
- * Example: SSC2026/SEPTEMBER/93
+ * Example: SSC2026/OCT/93
  */
 export function generateAutoInvoiceNo(serialNo: string = '93'): string {
   const year = getCurrentYear();
