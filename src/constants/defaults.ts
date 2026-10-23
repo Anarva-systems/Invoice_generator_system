@@ -134,7 +134,7 @@ export const DEFAULT_CLIENT_RECEIPT_DATA: ClientReceiptData = {
   },
   company: {
     name: 'SATYA SAI CONSTRUCTIONS',
-    tagline: 'Consultant Civil Engineer, Approved Valuers& Contractors and Builders',
+    tagline: 'Consultant Engineer, Contractor, Builder and Approved Valuer',
     address: 'Upstairs: B.M.P.S, Near Diamond Park, New Colony, Srikakulam - 532001',
     gstin: '37BSZPS7072Q1ZT',
     pan: 'BSZPS7072Q',
