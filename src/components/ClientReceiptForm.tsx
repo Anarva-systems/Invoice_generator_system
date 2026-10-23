@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { ClientReceiptData, PaymentMode } from '../types/invoice';
+import type { ClientReceiptData, PaymentMode, BreakdownRowSettings } from '../types/invoice';
 import {
   Receipt,
   RotateCcw,
@@ -110,6 +110,16 @@ export const ClientReceiptForm: React.FC<ClientReceiptFormProps> = ({
         ...data.payment,
         totalBillAmount: clean,
         balanceRemaining: newBal !== '' ? newBal : '',
+      },
+    });
+  };
+
+  const handleBreakdownSettingChange = (field: keyof BreakdownRowSettings, val: any) => {
+    onChange({
+      ...data,
+      breakdownSettings: {
+        ...data.breakdownSettings,
+        [field]: val,
       },
     });
   };
@@ -559,6 +569,188 @@ export const ClientReceiptForm: React.FC<ClientReceiptFormProps> = ({
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Payment Accounting Breakdown Table Manager (Place / Remove & Edit Rows) */}
+          <div className="md:col-span-2 bg-slate-900/90 rounded-xl border border-slate-800 p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pb-2 border-b border-slate-800">
+              <div>
+                <div className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <Receipt className="w-4 h-4 text-emerald-400" />
+                  Payment Accounting Breakdown Table
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  Manage table placement: place on voucher or remove with one click.
+                </div>
+              </div>
+
+              {/* Master Place / Remove Toggle Button */}
+              <button
+                type="button"
+                onClick={() => onChange({ ...data, showBreakdownTable: data.showBreakdownTable === false ? true : false })}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border flex items-center gap-1.5 ${
+                  data.showBreakdownTable !== false
+                    ? 'bg-emerald-600 text-white border-emerald-500 shadow-md shadow-emerald-600/30'
+                    : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-white'
+                }`}
+              >
+                {data.showBreakdownTable !== false ? '✓ Table Placed on Voucher' : '✕ Table Removed from Voucher'}
+              </button>
+            </div>
+
+            {/* Individual Row Manager & Editors (Shown when Placed) */}
+            {data.showBreakdownTable !== false && (
+              <div className="space-y-2 pt-1">
+                <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+                  Row Visibility & Custom Labels (Check to Place, Uncheck or click Remove to exclude):
+                </div>
+
+                {/* Row 1: Total Project / Contract Value */}
+                <div className="flex items-center gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <input
+                    type="checkbox"
+                    checked={data.breakdownSettings?.showTotalContractValue !== false}
+                    onChange={(e) => handleBreakdownSettingChange('showTotalContractValue', e.target.checked)}
+                    className="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                  />
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={data.breakdownSettings?.totalContractValueLabel ?? 'Total Project / Contract Value:'}
+                      onChange={(e) => handleBreakdownSettingChange('totalContractValueLabel', e.target.value)}
+                      className="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-xs text-white focus:outline-none focus:border-indigo-500"
+                      placeholder="Total Project / Contract Value:"
+                    />
+                  </div>
+                  <span className="text-xs font-mono font-bold text-white px-2 whitespace-nowrap">
+                    ₹{totalBillNum.toLocaleString('en-IN')}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleBreakdownSettingChange('showTotalContractValue', !(data.breakdownSettings?.showTotalContractValue !== false))}
+                    className="text-xs px-2.5 py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800 whitespace-nowrap"
+                  >
+                    {data.breakdownSettings?.showTotalContractValue !== false ? 'Remove' : 'Place'}
+                  </button>
+                </div>
+
+                {/* Row 2: Past Payments Received - History */}
+                <div className="flex items-center gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <input
+                    type="checkbox"
+                    checked={data.breakdownSettings?.showPastPayments !== false}
+                    onChange={(e) => handleBreakdownSettingChange('showPastPayments', e.target.checked)}
+                    className="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                  />
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={data.breakdownSettings?.pastPaymentsLabel ?? 'Past Payments Received - History:'}
+                      onChange={(e) => handleBreakdownSettingChange('pastPaymentsLabel', e.target.value)}
+                      className="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-xs text-white focus:outline-none focus:border-indigo-500"
+                      placeholder="Past Payments Received - History:"
+                    />
+                  </div>
+                  <span className="text-xs font-mono font-bold text-blue-400 px-2 whitespace-nowrap">
+                    ₹{pastAmountNum.toLocaleString('en-IN')}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleBreakdownSettingChange('showPastPayments', !(data.breakdownSettings?.showPastPayments !== false))}
+                    className="text-xs px-2.5 py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800 whitespace-nowrap"
+                  >
+                    {data.breakdownSettings?.showPastPayments !== false ? 'Remove' : 'Place'}
+                  </button>
+                </div>
+
+                {/* Row 3: Present Payment Received - Now */}
+                <div className="flex items-center gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <input
+                    type="checkbox"
+                    checked={data.breakdownSettings?.showPresentPayment !== false}
+                    onChange={(e) => handleBreakdownSettingChange('showPresentPayment', e.target.checked)}
+                    className="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                  />
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={data.breakdownSettings?.presentPaymentLabel ?? 'Present Payment Received - Now:'}
+                      onChange={(e) => handleBreakdownSettingChange('presentPaymentLabel', e.target.value)}
+                      className="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-xs text-white focus:outline-none focus:border-indigo-500 font-semibold"
+                      placeholder="Present Payment Received - Now:"
+                    />
+                  </div>
+                  <span className="text-xs font-mono font-bold text-emerald-400 px-2 whitespace-nowrap">
+                    ₹{numericAmount.toLocaleString('en-IN')}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleBreakdownSettingChange('showPresentPayment', !(data.breakdownSettings?.showPresentPayment !== false))}
+                    className="text-xs px-2.5 py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800 whitespace-nowrap"
+                  >
+                    {data.breakdownSettings?.showPresentPayment !== false ? 'Remove' : 'Place'}
+                  </button>
+                </div>
+
+                {/* Row 4: Total Cumulative Received */}
+                <div className="flex items-center gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <input
+                    type="checkbox"
+                    checked={data.breakdownSettings?.showCumulativeReceived !== false}
+                    onChange={(e) => handleBreakdownSettingChange('showCumulativeReceived', e.target.checked)}
+                    className="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                  />
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={data.breakdownSettings?.cumulativeReceivedLabel ?? 'Total Cumulative Received to Date:'}
+                      onChange={(e) => handleBreakdownSettingChange('cumulativeReceivedLabel', e.target.value)}
+                      className="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-xs text-white focus:outline-none focus:border-indigo-500 font-semibold"
+                      placeholder="Total Cumulative Received to Date:"
+                    />
+                  </div>
+                  <span className="text-xs font-mono font-bold text-indigo-300 px-2 whitespace-nowrap">
+                    ₹{totalReceivedNum.toLocaleString('en-IN')}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleBreakdownSettingChange('showCumulativeReceived', !(data.breakdownSettings?.showCumulativeReceived !== false))}
+                    className="text-xs px-2.5 py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800 whitespace-nowrap"
+                  >
+                    {data.breakdownSettings?.showCumulativeReceived !== false ? 'Remove' : 'Place'}
+                  </button>
+                </div>
+
+                {/* Row 5: Net Balance Amount to Pay */}
+                <div className="flex items-center gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800">
+                  <input
+                    type="checkbox"
+                    checked={data.breakdownSettings?.showNetBalance !== false}
+                    onChange={(e) => handleBreakdownSettingChange('showNetBalance', e.target.checked)}
+                    className="rounded bg-slate-900 border-slate-700 text-indigo-600 focus:ring-indigo-500 w-4 h-4"
+                  />
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={data.breakdownSettings?.netBalanceLabel ?? 'Net Balance Amount to Pay:'}
+                      onChange={(e) => handleBreakdownSettingChange('netBalanceLabel', e.target.value)}
+                      className="w-full px-2 py-1 bg-slate-900 border border-slate-800 rounded text-xs text-white focus:outline-none focus:border-indigo-500 font-bold text-amber-300"
+                      placeholder="Net Balance Amount to Pay:"
+                    />
+                  </div>
+                  <span className="text-xs font-mono font-bold text-amber-400 px-2 whitespace-nowrap">
+                    ₹{(totalBillNum > 0 ? computedBalance : (parseFloat(String(data.payment.balanceRemaining || 0)) || 0)).toLocaleString('en-IN')}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleBreakdownSettingChange('showNetBalance', !(data.breakdownSettings?.showNetBalance !== false))}
+                    className="text-xs px-2.5 py-1 rounded bg-slate-900 text-slate-400 hover:text-white border border-slate-800 whitespace-nowrap"
+                  >
+                    {data.breakdownSettings?.showNetBalance !== false ? 'Remove' : 'Place'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

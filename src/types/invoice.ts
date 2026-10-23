@@ -111,6 +111,19 @@ export interface ConstructionInvoiceData {
 // -------------------------------------------------------------
 export type PaymentMode = 'Cash' | 'Cheque' | 'Bank Transfer (NEFT/RTGS)' | 'UPI' | 'Other';
 
+export interface BreakdownRowSettings {
+  showTotalContractValue: boolean;
+  totalContractValueLabel?: string;
+  showPastPayments: boolean;
+  pastPaymentsLabel?: string;
+  showPresentPayment: boolean;
+  presentPaymentLabel?: string;
+  showCumulativeReceived: boolean;
+  cumulativeReceivedLabel?: string;
+  showNetBalance: boolean;
+  netBalanceLabel?: string;
+}
+
 export interface ClientReceiptData {
   receiptNo: string;
   receiptDate: string;
@@ -146,6 +159,8 @@ export interface ClientReceiptData {
   notes?: string;
   exportPortion?: 'single' | 'full';
   showPaymentTable?: boolean;
+  showBreakdownTable?: boolean;
+  breakdownSettings?: Partial<BreakdownRowSettings>;
 }
 
 // -------------------------------------------------------------

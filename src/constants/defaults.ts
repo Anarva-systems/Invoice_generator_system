@@ -141,6 +141,19 @@ export const DEFAULT_CLIENT_RECEIPT_DATA: ClientReceiptData = {
     authorizedSignatory: 'B. Satyanarayana',
   },
   notes: '',
+  showBreakdownTable: true,
+  breakdownSettings: {
+    showTotalContractValue: true,
+    totalContractValueLabel: 'Total Project / Contract Value:',
+    showPastPayments: true,
+    pastPaymentsLabel: 'Past Payments Received - History:',
+    showPresentPayment: true,
+    presentPaymentLabel: 'Present Payment Received - Now:',
+    showCumulativeReceived: true,
+    cumulativeReceivedLabel: 'Total Cumulative Received to Date:',
+    showNetBalance: true,
+    netBalanceLabel: 'Net Balance Amount to Pay:',
+  },
 };
 
 export const DEFAULT_LABOR_PAYSLIP_DATA: LaborPayslipData = {

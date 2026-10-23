@@ -30,6 +30,8 @@ export const ClientReceiptTemplate: React.FC<ClientReceiptTemplateProps> = ({ da
   const amountInWords = numberToIndianWords(numericAmount);
   const isSingle = data.exportPortion === 'single';
   const showTable = data.showPaymentTable !== false;
+  const showBreakdown = data.showBreakdownTable !== false;
+  const bSettings = data.breakdownSettings || {};
 
   const hasTableRows = !!(
     data.payment.paymentTowards ||
@@ -38,6 +40,55 @@ export const ClientReceiptTemplate: React.FC<ClientReceiptTemplateProps> = ({ da
     data.payment.transactionRef ||
     data.payment.bankName
   );
+
+  const activeBreakdownRows: { id: string; label: string; amount: number; isBold?: boolean; bgColor?: string }[] = [];
+
+  if (bSettings.showTotalContractValue !== false && totalBillNum > 0) {
+    activeBreakdownRows.push({
+      id: 'totalContractValue',
+      label: bSettings.totalContractValueLabel || 'Total Project / Contract Value:',
+      amount: totalBillNum,
+    });
+  }
+
+  if (bSettings.showPastPayments !== false) {
+    activeBreakdownRows.push({
+      id: 'pastPayments',
+      label: bSettings.pastPaymentsLabel || 'Past Payments Received - History:',
+      amount: pastAmountNum,
+      bgColor: '#fafafa',
+    });
+  }
+
+  if (bSettings.showPresentPayment !== false) {
+    activeBreakdownRows.push({
+      id: 'presentPayment',
+      label: bSettings.presentPaymentLabel || 'Present Payment Received - Now:',
+      amount: numericAmount,
+      isBold: true,
+      bgColor: '#ffffff',
+    });
+  }
+
+  if (bSettings.showCumulativeReceived !== false) {
+    activeBreakdownRows.push({
+      id: 'cumulativeReceived',
+      label: bSettings.cumulativeReceivedLabel || 'Total Cumulative Received to Date:',
+      amount: totalReceivedNum,
+      isBold: true,
+      bgColor: '#f8fafc',
+    });
+  }
+
+  if (bSettings.showNetBalance !== false) {
+    activeBreakdownRows.push({
+      id: 'netBalance',
+      label: bSettings.netBalanceLabel || 'Net Balance Amount to Pay:',
+      amount: balanceNum,
+      isBold: true,
+      bgColor: '#f1f5f9',
+    });
+  }
 
   const ReceiptCopy = () => (
     <div
@@ -335,71 +386,63 @@ export const ClientReceiptTemplate: React.FC<ClientReceiptTemplateProps> = ({ da
             {amountInWords}
           </div>
 
-          {/* Formal Accounting Breakdown Table */}
-          <table
-            style={{
-              width: '100%',
-              marginTop: '3px',
-              borderCollapse: 'collapse',
-              border: '1px solid #000000',
-              fontSize: '9px',
-            }}
-          >
-            <thead>
-              <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '1px solid #000000' }}>
-                <th style={{ padding: '3px 6px', textAlign: 'left', fontWeight: 'bold', color: '#000000', borderRight: '1px solid #000000' }}>
-                  Payment Accounting Breakdown
-                </th>
-                <th style={{ padding: '3px 6px', textAlign: 'right', fontWeight: 'bold', color: '#000000', width: '32%' }}>
-                  Amount in INR (₹)
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {totalBillNum > 0 && (
-                <tr style={{ borderBottom: '1px solid #000000' }}>
-                  <td style={{ padding: '3px 6px', color: '#000000', borderRight: '1px solid #000000' }}>
-                    1. Total Project / Contract Value:
-                  </td>
-                  <td style={{ padding: '3px 6px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', color: '#000000' }}>
-                    ₹ {totalBillNum.toLocaleString('en-IN')}
-                  </td>
+          {/* Formal Accounting Breakdown Table (Manageable - Placed or Removed) */}
+          {showBreakdown && activeBreakdownRows.length > 0 && (
+            <table
+              style={{
+                width: '100%',
+                marginTop: '3px',
+                borderCollapse: 'collapse',
+                border: '1px solid #000000',
+                fontSize: '9px',
+              }}
+            >
+              <thead>
+                <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '1px solid #000000' }}>
+                  <th style={{ padding: '3px 6px', textAlign: 'left', fontWeight: 'bold', color: '#000000', borderRight: '1px solid #000000' }}>
+                    Payment Accounting Breakdown
+                  </th>
+                  <th style={{ padding: '3px 6px', textAlign: 'right', fontWeight: 'bold', color: '#000000', width: '32%' }}>
+                    Amount in INR (₹)
+                  </th>
                 </tr>
-              )}
-              <tr style={{ borderBottom: '1px solid #000000', backgroundColor: '#fafafa' }}>
-                <td style={{ padding: '3px 6px', color: '#000000', borderRight: '1px solid #000000' }}>
-                  2. Past Payments Received - History:
-                </td>
-                <td style={{ padding: '3px 6px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', color: '#000000' }}>
-                  ₹ {pastAmountNum.toLocaleString('en-IN')}
-                </td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid #000000', backgroundColor: '#ffffff' }}>
-                <td style={{ padding: '3px 6px', color: '#000000', fontWeight: 'bold', borderRight: '1px solid #000000' }}>
-                  3. Present Payment Received - Now:
-                </td>
-                <td style={{ padding: '3px 6px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', color: '#000000' }}>
-                  ₹ {numericAmount.toLocaleString('en-IN')}
-                </td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid #000000', backgroundColor: '#f8fafc' }}>
-                <td style={{ padding: '3px 6px', color: '#000000', fontWeight: 'bold', borderRight: '1px solid #000000' }}>
-                  4. Total Cumulative Received to Date:
-                </td>
-                <td style={{ padding: '3px 6px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', color: '#000000' }}>
-                  ₹ {totalReceivedNum.toLocaleString('en-IN')}
-                </td>
-              </tr>
-              <tr style={{ backgroundColor: '#f1f5f9' }}>
-                <td style={{ padding: '3px 6px', color: '#000000', fontWeight: 'bold', borderRight: '1px solid #000000' }}>
-                  5. Net Balance Amount to Pay:
-                </td>
-                <td style={{ padding: '3px 6px', textAlign: 'right', fontWeight: 'bold', fontFamily: 'monospace', fontSize: '10.5px', color: '#000000' }}>
-                  ₹ {balanceNum.toLocaleString('en-IN')}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {activeBreakdownRows.map((row, idx) => (
+                  <tr
+                    key={row.id}
+                    style={{
+                      borderBottom: idx === activeBreakdownRows.length - 1 ? 'none' : '1px solid #000000',
+                      backgroundColor: row.bgColor || '#ffffff',
+                    }}
+                  >
+                    <td
+                      style={{
+                        padding: '3px 6px',
+                        color: '#000000',
+                        fontWeight: row.isBold ? 'bold' : 'normal',
+                        borderRight: '1px solid #000000',
+                      }}
+                    >
+                      {`${idx + 1}. ${row.label}`}
+                    </td>
+                    <td
+                      style={{
+                        padding: '3px 6px',
+                        textAlign: 'right',
+                        fontWeight: 'bold',
+                        fontFamily: 'monospace',
+                        fontSize: row.id === 'netBalance' ? '10.5px' : '9px',
+                        color: '#000000',
+                      }}
+                    >
+                      ₹ {row.amount.toLocaleString('en-IN')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Signature Section */}
